@@ -11,6 +11,7 @@ void	ft_release(t_data *data)
 		pthread_mutex_destroy(&data->dongles[i].mutex);
 		i++;
 	}
+	pthread_mutex_destroy(&data->stop_mutex);
 	free(data->coders);
 	free(data->dongles);
 }

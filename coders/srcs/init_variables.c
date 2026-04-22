@@ -37,7 +37,11 @@ static int	ft_init_dongles(t_data *data)
 	while (i < data->number_of_coders)
 	{
 		data->dongles[i].id = i + 1;
-		pthread_mutex_init(&data->dongles[i].mutex, NULL);
+		if (pthread_mutex_init(&data->dongles[i].mutex, NULL) != 0)
+		{
+			fprintf(stderr, "Error init mutex\n");
+			return (-1);
+		}
 		i++;
 	}
 	return (0);
@@ -45,6 +49,13 @@ static int	ft_init_dongles(t_data *data)
 
 int	ft_init_variables(t_data *data)
 {
+	data->stop_simulation = 0;
+	if (pthread_mutex_init(&data->stop_mutex, NULL) != 0)
+	{
+		fprintf(stderr, "Error init mutex\n");
+		return (-1);
+	}
+
 	if (ft_init_dongles(data) == -1)
 	{
 		fprintf(stderr, "Error malloc dongles\n");

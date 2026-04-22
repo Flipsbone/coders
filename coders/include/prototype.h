@@ -19,5 +19,10 @@ int		ft_parse_arguments(int ac, char **av, t_data *data);
 int		ft_init_variables(t_data *data);
 void	ft_release(t_data *data);
 int	    ft_start_simulation(t_data *data);
+void	ft_take_dongles(t_coder *coder);
+int     ft_check_simulation_stop(t_data *data);
+long	ft_get_time(void);
+void	ft_drop_dongles(t_coder *coder);
+
 
 #endif

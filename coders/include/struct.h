@@ -30,6 +30,9 @@ typedef struct s_data
 	char				*scheduler;
 	t_coder				*coders;
 	t_dongle			*dongles;
+	int					stop_simulation;
+	pthread_mutex_t		stop_mutex;
+	long				start_time;
 }						t_data;
 
 struct					s_coder
