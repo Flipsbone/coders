@@ -23,6 +23,11 @@ int	main(int ac, char **av)
 		ft_release(&data);
 		return (-1);
 	}
+	if (ft_start_simulation(&data) == -1)
+	{
+		ft_release(&data);
+		return(-1);
+	}
 	ft_release(&data);
 	return (0);
 }

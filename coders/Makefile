@@ -8,6 +8,7 @@ FILES       = \
 			codexion.c \
 			init_variables.c \
 			release.c \
+			simulation.c \
             parse.c
 
 SRCS        = $(addprefix $(SRC_DIR)/, $(FILES))

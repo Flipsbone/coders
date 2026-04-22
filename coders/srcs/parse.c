@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void	ft_fill_data(t_data *data, int *tmp_args, char *scheduler)
+static	void	ft_fill_data(t_data *data, int *tmp_args, char *scheduler)
 {
 	data->number_of_coders = tmp_args[0];
 	data->time_to_burnout = tmp_args[1];
@@ -26,7 +26,7 @@ void	ft_fill_data(t_data *data, int *tmp_args, char *scheduler)
 	data->scheduler = scheduler;
 }
 
-int	ft_check_coders(int coders)
+static	int	ft_check_coders(int coders)
 {
 	if (coders == 0)
 	{
@@ -36,7 +36,7 @@ int	ft_check_coders(int coders)
 	return (0);
 }
 
-int	ft_numeric_str(const char *str)
+static	int	ft_numeric_str(const char *str)
 {
 	long	result;
 	size_t	i;
@@ -55,7 +55,7 @@ int	ft_numeric_str(const char *str)
 	return (result);
 }
 
-int	ft_check_numb_arguments(int ac, char **av)
+static	int	ft_check_numb_arguments(int ac, char **av)
 {
 	(void)av;
 	if (ac != 9)

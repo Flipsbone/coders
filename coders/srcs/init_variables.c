@@ -1,6 +1,7 @@
 #include "../include/struct.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 static int	ft_init_coders(t_data *data)
 {
@@ -8,8 +9,10 @@ static int	ft_init_coders(t_data *data)
 
 	data->coders = malloc(sizeof(t_coder) * data->number_of_coders);
 	if (!data->coders)
-		return (-1);
+		return(-1);
+
 	memset(data->coders, 0, sizeof(t_coder) * data->number_of_coders);
+
 	i = 0;
 	while (i < data->number_of_coders)
 	{
@@ -43,8 +46,15 @@ static int	ft_init_dongles(t_data *data)
 int	ft_init_variables(t_data *data)
 {
 	if (ft_init_dongles(data) == -1)
-		return (-1);
+	{
+		fprintf(stderr, "Error malloc dongles\n");
+		return(-1);
+	}
+	
 	if (ft_init_coders(data) == -1)
-		return (-1);
+	{
+		fprintf(stderr, "Error malloc coders\n");
+		return(-1);
+	}
 	return (0);
 }
