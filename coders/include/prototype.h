@@ -1,21 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   codexion.h                                         :+:      :+:    :+:   */
+/*   prototype.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/16 15:35:30 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/16 16:38:34 by advacher         ###   ########.fr       */
+/*   Created: 2026/04/22 11:36:01 by advacher          #+#    #+#             */
+/*   Updated: 2026/04/22 15:31:30 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CODEXION_H
-# define CODEXION_H
+#ifndef PROTOTYPE_H
+# define PROTOTYPE_H
 
-# include <stddef.h>
-#include <stdio.h>
+# include "struct.h"
 
-int parse_arguments(int ac, char **av);
+int		ft_parse_arguments(int ac, char **av, t_data *data);
+int		ft_init_variables(t_data *data);
+void	ft_release(t_data *data);
 
 #endif

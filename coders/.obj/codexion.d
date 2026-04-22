@@ -1,1 +1,2 @@
-.obj/codexion.o: srcs/codexion.c include/codexion.h
+.obj/codexion.o: srcs/codexion.c srcs/../include/prototype.h \
+  include/struct.h

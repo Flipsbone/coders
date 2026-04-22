@@ -4,15 +4,18 @@ SRC_DIR     = srcs
 INC_DIR     = include
 OBJ_DIR     = .obj
 
-FILES       = codexion.c \
-              parse.c
+FILES       = \
+			codexion.c \
+			init_variables.c \
+			release.c \
+            parse.c
 
 SRCS        = $(addprefix $(SRC_DIR)/, $(FILES))
 OBJS        = $(addprefix $(OBJ_DIR)/, $(FILES:.c=.o))
 DEPS        = $(addprefix $(OBJ_DIR)/, $(FILES:.c=.d))
 
 CC          = cc
-CFLAGS      = -Wall -Wextra -Werror -MMD -I$(INC_DIR) -g3
+CFLAGS      = -Wall -Wextra -Werror -MMD -I$(INC_DIR) -g3 -pthread -std=c89
 
 all: $(NAME)
 
