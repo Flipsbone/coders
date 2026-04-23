@@ -135,3 +135,39 @@ Une variable de condition n'est pas une simple variable comme un int ou un bool.
 
     Création de la file : Elle prépare les structures internes pour que, plus tard, quand tu feras un pthread_cond_wait, le système sache exactement où mettre le thread pour qu'il s'endorme sans consommer de CPU.
 
+
+
+lors de la creation de la simulation : 
+on commence par creer les coders qui font faire un appel a une routine 
+chaque phread va etre cree puis ils vont s endormir pour attendre que tous le monde soit cree 
+si y a un probleme la demarche a suivre est la suivante : 
+
+    Signaler l'erreur : is_ready = -1 + broadcast
+
+    Attendre tout le monde : boucle pthread_join.
+
+    Nettoyer tout (Free/Destroy) : appele fonction de nettoyage global.
+
+ensuite on lance la creation du monitor : 
+
+si y a un probleme on suit globalement le meme schema que plus haut :
+Le signal d'arrêt : En mettant is_ready = -1 et en faisant un broadcast, tu réveilles tous tes coders qui dormaient sur pthread_cond_wait.
+
+Le déblocage : threads sortent de leur wait, vérifient is_ready, voient qu'il vaut -1, font un unlock du mutex, et se terminent (return (NULL)).
+
+La synchronisation : Appel à ft_finish_simulation(data) (qui contient pthread_join) force le thread principal à attendre que chaque thread ait réellement fini son exécution.
+
+Le nettoyage sécurisé : Une fois que ft_finish_simulation a rendu la main, tu es garanti qu'aucun thread ne tourne plus. ft_release_all en toute sécurité dans ton main sans risquer de détruire un mutex pendant qu'il est utilisé.
+
+
+
+le Scheduler avec File de Priorité.:
+Plutôt que de laisser les codeurs se jeter sur les dongles il faut mettre en place un système de "Ticket".
+
+    Un codeur veut un dongle.
+
+    Il demande au dongle de s'inscrire dans sa file d'attente (en donnant son id et son heure limite avant le burnout).
+
+    Le codeur s'endort (pthread_cond_wait).
+
+    Quand le dongle est libre, c'est le dongle lui-même (ou plutôt la fonction de libération) qui regarde sa file d'attente, choisit le gagnant selon la règle (FIFO ou EDF), et le réveille (pthread_cond_signal).
