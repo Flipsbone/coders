@@ -3,6 +3,23 @@
 #include <string.h>
 #include <stdio.h>
 
+static int	ft_init_simulation(t_data *data)
+{
+	data->is_ready = 0;
+    if (pthread_mutex_init(&data->sim_mutex, NULL) != 0)
+	{
+		fprintf(stderr, "Error init simulation mutex\n");
+		ft_release_coders(data);
+		return (-1);
+	}
+    if (pthread_cond_init(&data->start_cond, NULL) != 0)
+	{
+		fprintf(stderr, "Error init start_cond \n");
+		ft_release_simulation(data);
+		return (-1);
+	}
+    return (0);
+}
 static int	ft_init_coders(t_data *data)
 {
 	int	i;
@@ -11,7 +28,7 @@ static int	ft_init_coders(t_data *data)
 	if (!data->coders)
 	{
 		fprintf(stderr, "Error malloc coders\n");
-		ft_release(data);
+		ft_release_coders(data);
 		return (-1);
 	}
 
@@ -48,7 +65,7 @@ static int	ft_init_dongles(t_data *data)
 		data->dongles[i].id = i + 1;
 		if (pthread_mutex_init(&data->dongles[i].mutex, NULL) != 0)
 		{
-			ft_destroy_dongle(i , data);
+			ft_release_dongle(i , data);
 			fprintf(stderr, "Error init mutex\n");
 			return (-1);
 		}
@@ -64,6 +81,9 @@ int	ft_init_variables(t_data *data)
 
 	if (ft_init_coders(data) == -1)
 		return(-1);
+
+	if (ft_init_simulation(data) == -1)
+		return (-1);
 
 	return (0);
 }

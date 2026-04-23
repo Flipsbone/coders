@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 15:35:30 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/23 13:46:45 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/23 14:42:48 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,9 @@ typedef struct s_data
 	t_coder				*coders;
 	t_dongle			*dongles;
 	pthread_t			monitor;
+	int					is_ready;
+	pthread_mutex_t		sim_mutex;
+	pthread_cond_t		start_cond;
 }						t_data;
 
 struct					s_coder
