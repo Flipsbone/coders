@@ -22,7 +22,7 @@ int	main(int ac, char **av)
 		return (-1);
 	if (ft_start_simulation(&data) == -1)
 	{
-		ft_release_coders(&data);
+		ft_release_all(&data);
 		return(-1);
 	}
 	ft_release_all(&data);
