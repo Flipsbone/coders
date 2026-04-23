@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 15:35:30 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/22 15:05:07 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/23 13:46:45 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,7 @@ typedef struct s_data
 	char				*scheduler;
 	t_coder				*coders;
 	t_dongle			*dongles;
-	int					stop_simulation;
-	pthread_mutex_t		stop_mutex;
-	long				start_time;
+	pthread_t			monitor;
 }						t_data;
 
 struct					s_coder

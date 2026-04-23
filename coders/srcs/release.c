@@ -1,6 +1,20 @@
 #include "../include/prototype.h"
 #include <stdlib.h>
 
+void	ft_destroy_dongle(int i, t_data *data)
+{
+	int j;
+	j = 0;
+
+	while (j < i)
+	{
+		pthread_mutex_destroy(&data->dongles[j].mutex);
+		j++;
+	}
+	free(data->dongles);
+}
+
+
 void	ft_release(t_data *data)
 {
 	int	i;
@@ -11,7 +25,6 @@ void	ft_release(t_data *data)
 		pthread_mutex_destroy(&data->dongles[i].mutex);
 		i++;
 	}
-	pthread_mutex_destroy(&data->stop_mutex);
-	free(data->coders);
 	free(data->dongles);
+	free(data->coders);
 }

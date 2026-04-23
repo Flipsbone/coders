@@ -9,7 +9,6 @@ FILES       = \
 			init_variables.c \
 			release.c \
 			simulation.c \
-			action.c \
 			utils.c \
             parse.c
 

@@ -1,4 +1,4 @@
-#include "../include/struct.h"
+#include "../include/prototype.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -9,7 +9,11 @@ static int	ft_init_coders(t_data *data)
 
 	data->coders = malloc(sizeof(t_coder) * data->number_of_coders);
 	if (!data->coders)
-		return(-1);
+	{
+		fprintf(stderr, "Error malloc coders\n");
+		ft_release(data);
+		return (-1);
+	}
 
 	memset(data->coders, 0, sizeof(t_coder) * data->number_of_coders);
 
@@ -31,14 +35,20 @@ static int	ft_init_dongles(t_data *data)
 
 	data->dongles = malloc(sizeof(t_dongle) * data->number_of_coders);
 	if (!data->dongles)
+	{
+		fprintf(stderr, "Error malloc dongles\n");
 		return (-1);
+	}
+
 	memset(data->dongles, 0, sizeof(t_dongle) * data->number_of_coders);
 	i = 0;
+
 	while (i < data->number_of_coders)
 	{
 		data->dongles[i].id = i + 1;
 		if (pthread_mutex_init(&data->dongles[i].mutex, NULL) != 0)
 		{
+			ft_destroy_dongle(i , data);
 			fprintf(stderr, "Error init mutex\n");
 			return (-1);
 		}
@@ -49,23 +59,11 @@ static int	ft_init_dongles(t_data *data)
 
 int	ft_init_variables(t_data *data)
 {
-	data->stop_simulation = 0;
-	if (pthread_mutex_init(&data->stop_mutex, NULL) != 0)
-	{
-		fprintf(stderr, "Error init mutex\n");
-		return (-1);
-	}
-
 	if (ft_init_dongles(data) == -1)
-	{
-		fprintf(stderr, "Error malloc dongles\n");
 		return(-1);
-	}
-	
+
 	if (ft_init_coders(data) == -1)
-	{
-		fprintf(stderr, "Error malloc coders\n");
 		return(-1);
-	}
+
 	return (0);
 }

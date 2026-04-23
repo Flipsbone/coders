@@ -2,16 +2,17 @@
 #include "../include/struct.h"
 #include <stdio.h>
 
-static  void	*ft_coder_routine(void *thread)
+static  void	*ft_coder_routine(void *param)
 {
+    int i;
     t_coder	*coder;
-    coder = (t_coder *)thread;
+    coder = (t_coder *)param;
+    i = 0;
 
-    while (ft_check_simulation_stop(coder->data) == 0)
+    while (i < coder->data->number_of_coders)
     {
-        ft_take_dongles(coder);
         printf("Coder %d is ready to code!\n", coder->id);
-        ft_drop_dongles(coder);
+        i++;
     }
 	return (NULL);
 }
@@ -39,10 +40,9 @@ int	ft_start_simulation(t_data *data)
     int i;
     i = 0;
 
-    data->start_time = ft_get_time();
     while (i < data->number_of_coders)
     {
-        if (pthread_create(&data->coders[i].thread_id, NULL, 
+        if (pthread_create(&data->coders[i].thread_id, NULL,
 			&ft_coder_routine, &data->coders[i]) != 0)
 		{
 			fprintf(stderr, "Error: Failed to create thread %d\n", i);
