@@ -95,3 +95,43 @@ return (void*) result,
 
 phread_join(th , (void **) &res)
 take a function void **
+
+
+The Mutex (pthread_mutex_t): It protects access to your data (e.g., is_ready). It ensures that no one reads is_ready while you are modifying it.
+
+The Condition Variable (pthread_cond_t): It is used for time synchronization. It doesn't protect anything at all. Its sole purpose is to tell threads: "Sleep here until someone wakes you up."
+
+
+
+
+
+1 etape parsing 
+2 etape init dongle , coders et une simulation qui permettera de faire le top depart.
+
+chaque etape penser a free correctement ce qui a ete deja cree tout comme la destrution des mutex !
+
+comment fonctionne l etape de la simulation : 
+
+pthread_mutex_init(&data->sim_mutex, NULL) != 0)
+Le Mutex sert à protéger la pancarte is_ready pour qu'elle ne soit pas lue/modifiée par 10 personnes en même temps.
+C'est ce qu'on appelle une "Race Condition" (ils font la course pour lire la donnée). Le mutex les force à se mettre en file indienne pour lire l'information proprement.
+
+
+    1. On prépare le mécanisme (l'initialisation)
+    pthread_cond_init(&data->start_cond, NULL);
+
+    2. Plus tard, le thread dit : "Je m'endors en attendant un signal"
+    (Il libère le mutex et s'endort grâce à start_cond)
+    pthread_cond_wait(&data->start_cond, &data->sim_mutex);
+
+    3. Encore plus tard, le main dit : "Allez, réveillez-vous tous !"
+    pthread_cond_broadcast(&data->start_cond);
+
+
+pthread_cond_init(&data->start_cond, NULL):
+Une variable de condition n'est pas une simple variable comme un int ou un bool. C'est un objet complexe du système (le noyau) qui contient une file d'attente.
+
+    Allocation/Préparation : pthread_cond_init indique au système : "Je vais utiliser cette zone mémoire pour gérer une file d'attente de threads qui dorment".
+
+    Création de la file : Elle prépare les structures internes pour que, plus tard, quand tu feras un pthread_cond_wait, le système sache exactement où mettre le thread pour qu'il s'endorme sans consommer de CPU.
+

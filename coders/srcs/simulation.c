@@ -4,11 +4,9 @@
 
 static  void	*ft_coder_routine(void *thread)
 {
-    int i;
     t_coder	*coder;
     t_data  *data;
 
-    i = 0;
     coder = (t_coder *)thread;
     data = coder->data;
 

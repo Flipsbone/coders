@@ -18,6 +18,7 @@
 int		ft_parse_arguments(int ac, char **av, t_data *data);
 int		ft_init_variables(t_data *data);
 int	    ft_start_simulation(t_data *data);
+void	*ft_monitor_routine(void *param);
 
 void	ft_release_coders(t_data *data);
 void	ft_release_dongle(int i, t_data *data);
