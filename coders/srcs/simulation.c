@@ -1,31 +1,54 @@
+#define _DEFAULT_SOURCE
 #include "../include/prototype.h"
 #include "../include/struct.h"
 #include <stdio.h>
+#include <unistd.h>
 
 
-static  void	*ft_coder_routine(void *thread)
+
+static void	*ft_coder_routine(void *thread)
 {
-    t_coder	*coder;
-    t_data  *data;
+	t_coder	*coder;
+	t_data	*data;
 
-    coder = (t_coder *)thread;
-    data = coder->data;
+	coder = (t_coder *)thread;
+	data = coder->data;
 
-    pthread_mutex_lock(&data->sim_mutex);
-    while (data->is_ready == 0)
-    {
-        pthread_cond_wait(&data->start_cond, &data->sim_mutex);
-    }
-    if (data->is_ready == -1)
-    {
-        pthread_mutex_unlock(&data->sim_mutex);
-        return (NULL);
-    }
-    pthread_mutex_unlock(&data->sim_mutex);
-    ft_print_status(data, coder->id, "is ready to code!");
+	pthread_mutex_lock(&data->sim_mutex);
+	while (data->is_ready == 0)
+		pthread_cond_wait(&data->start_cond, &data->sim_mutex);
+	if (data->is_ready == -1)
+	{
+		pthread_mutex_unlock(&data->sim_mutex);
+		return (NULL);
+	}
+	pthread_mutex_unlock(&data->sim_mutex);
+
+	coder->last_compile_start = data->start_time;
+
+	while (1)
+	{
+		pthread_mutex_lock(&coder->left_dongle->mutex);
+		ft_print_status(data, coder->id, "has taken a dongle");
+
+		pthread_mutex_lock(&coder->right_dongle->mutex);
+		ft_print_status(data, coder->id, "has taken a dongle");
+
+		coder->last_compile_start = ft_get_time();
+		ft_print_status(data, coder->id, "is compiling");
+		usleep(data->time_to_compile * 1000);
+
+		pthread_mutex_unlock(&coder->left_dongle->mutex);
+		pthread_mutex_unlock(&coder->right_dongle->mutex);
+
+		ft_print_status(data, coder->id, "is debugging");
+		usleep(data->time_to_debug * 1000);
+
+		ft_print_status(data, coder->id, "is refactoring");
+		usleep(data->time_to_refactor * 1000);
+	}
 	return (NULL);
 }
-
 static  int ft_finish_simulation(t_data *data)
 {
     int i;
