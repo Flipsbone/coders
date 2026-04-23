@@ -3,6 +3,17 @@
 #include <string.h>
 #include <stdio.h>
 
+static int	ft_init_print(t_data *data)
+{
+	if (pthread_mutex_init(&data->print_mutex, NULL) != 0)
+	{
+		fprintf(stderr, "Error init print_mutex\n");
+		ft_release_simulation(data);
+		return (-1);
+	}
+	return (0);
+}
+
 static int	ft_init_simulation(t_data *data)
 {
 	data->is_ready = 0;
@@ -83,6 +94,8 @@ int	ft_init_variables(t_data *data)
 		return(-1);
 
 	if (ft_init_simulation(data) == -1)
+		return (-1);
+	if (ft_init_print(data) == -1)
 		return (-1);
 
 	return (0);

@@ -15,6 +15,7 @@ void	ft_release_all(t_data *data)
 	free(data->coders);
 	pthread_mutex_destroy(&data->sim_mutex);
 	pthread_cond_destroy(&data->start_cond);
+	pthread_mutex_destroy(&data->print_mutex);
 }
 void	ft_release_simulation(t_data *data)
 {

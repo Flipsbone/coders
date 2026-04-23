@@ -2,6 +2,7 @@
 #include "../include/struct.h"
 #include <stdio.h>
 
+
 static  void	*ft_coder_routine(void *thread)
 {
     t_coder	*coder;
@@ -21,7 +22,7 @@ static  void	*ft_coder_routine(void *thread)
         return (NULL);
     }
     pthread_mutex_unlock(&data->sim_mutex);
-    printf("Coder %d is ready to code!\n", coder->id);
+    ft_print_status(data, coder->id, "is ready to code!");
 	return (NULL);
 }
 
@@ -86,6 +87,7 @@ int	ft_start_simulation(t_data *data)
 
     pthread_mutex_lock(&data->sim_mutex);
     data->is_ready = 1;
+    data->start_time = ft_get_time();
     pthread_cond_broadcast(&data->start_cond);
     pthread_mutex_unlock(&data->sim_mutex);
 

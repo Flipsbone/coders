@@ -34,6 +34,8 @@ typedef struct s_data
 	int					is_ready;
 	pthread_mutex_t		sim_mutex;
 	pthread_cond_t		start_cond;
+	long				start_time;
+	pthread_mutex_t		print_mutex;
 }						t_data;
 
 struct					s_coder
