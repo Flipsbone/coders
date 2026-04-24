@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init_variables.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/04/24 10:24:56 by advacher          #+#    #+#             */
+/*   Updated: 2026/04/24 10:24:57 by advacher         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/prototype.h"
 #include <stdlib.h>
 #include <string.h>
@@ -95,6 +107,7 @@ int	ft_init_variables(t_data *data)
 
 	if (ft_init_simulation(data) == -1)
 		return (-1);
+
 	if (ft_init_print(data) == -1)
 		return (-1);
 
