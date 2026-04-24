@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 10:24:56 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/24 10:24:57 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/24 13:54:19 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,33 +65,6 @@ static int	ft_init_coders(t_data *data)
 		data->coders[i].left_dongle = &data->dongles[i];
 		data->coders[i].right_dongle = (&data->dongles[(i + 1)
 				% data->number_of_coders]);
-		i++;
-	}
-	return (0);
-}
-static int	ft_init_dongles(t_data *data)
-{
-	int	i;
-
-	data->dongles = malloc(sizeof(t_dongle) * data->number_of_coders);
-	if (!data->dongles)
-	{
-		fprintf(stderr, "Error malloc dongles\n");
-		return (-1);
-	}
-
-	memset(data->dongles, 0, sizeof(t_dongle) * data->number_of_coders);
-	i = 0;
-
-	while (i < data->number_of_coders)
-	{
-		data->dongles[i].id = i + 1;
-		if (pthread_mutex_init(&data->dongles[i].mutex, NULL) != 0)
-		{
-			ft_release_dongle(i , data);
-			fprintf(stderr, "Error init mutex\n");
-			return (-1);
-		}
 		i++;
 	}
 	return (0);
