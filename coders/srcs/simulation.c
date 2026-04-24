@@ -6,10 +6,11 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 10:25:15 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/24 17:54:28 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/24 17:58:37 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#define _DEFAULT_SOURCE
 #include "../include/prototype.h"
 #include "../include/struct.h"
 #include <stdio.h>

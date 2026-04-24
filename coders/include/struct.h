@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 15:35:30 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/24 17:19:34 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/24 18:01:36 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ typedef struct s_data
 	pthread_t			monitor;
 	int					is_ready;
 	pthread_mutex_t		sim_mutex;
+	bool				stop_simulation;
 	pthread_cond_t		start_cond;
 	long				start_time;
 	pthread_mutex_t		print_mutex;

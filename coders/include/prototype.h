@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 11:36:01 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/24 17:25:05 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/24 18:11:02 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ void	ft_remove_from_queue(t_dongle *dongle, t_coder *coder);
 void 	ft_take_dongles(t_coder *coder);
 int		ft_check_simulation_stop(t_data *data);
 void 	ft_drop_dongles(t_coder *coder);
+int		ft_is_my_turn(t_dongle *dongle, t_coder *coder);
 
 void	ft_release_coders(t_data *data);
 void	ft_release_dongle(int i, t_data *data);

@@ -6,21 +6,16 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 14:35:17 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/24 17:18:47 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/24 18:12:24 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#define _DEFAULT_SOURCE
 #include "../include/prototype.h"
 #include "../include/struct.h"
 #include <stdio.h>
+#include <unistd.h>
 
-void ft_drop_dongles(t_coder *coder)
-{
-	ft_drop_one_dongle(coder, coder->left_dongle);
-	if (coder->left_dongle == coder->right_dongle)
-		return ;
-	ft_drop_one_dongle(coder, coder->right_dongle);
-}
 
 static void ft_drop_one_dongle(t_coder *coder, t_dongle *dongle)
 {
@@ -30,15 +25,21 @@ static void ft_drop_one_dongle(t_coder *coder, t_dongle *dongle)
 	pthread_cond_broadcast(&dongle->cond);
 	pthread_mutex_unlock(&dongle->mutex);
 }
-
+void ft_drop_dongles(t_coder *coder)
+{
+	ft_drop_one_dongle(coder, coder->left_dongle);
+	if (coder->left_dongle == coder->right_dongle)
+		return ;
+	ft_drop_one_dongle(coder, coder->right_dongle);
+}
 
 int	ft_check_simulation_stop(t_data *data)
 {
 	int	status;
 
-    pthread_mutex_lock(&data->stop_mutex);
+    pthread_mutex_lock(&data->sim_mutex);
     status = data->stop_simulation;
-    pthread_mutex_unlock(&data->stop_mutex);
+    pthread_mutex_unlock(&data->sim_mutex);
 
 	return (status);
 }

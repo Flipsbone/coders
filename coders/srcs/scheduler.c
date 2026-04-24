@@ -6,16 +6,17 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 10:24:45 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/24 17:33:21 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/24 18:12:58 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/prototype.h"
 #include "../include/struct.h"
+#include <string.h>
 
 void	ft_add_to_queue(t_dongle *dongle, t_coder *coder)
 {
-    if (dongle->queue_size < 2) // maybe delete
+    if (dongle->queue_size < 2)
     {
         dongle->queue[dongle->queue_size] = coder->id;
         dongle->queue_size++;

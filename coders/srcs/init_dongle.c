@@ -6,12 +6,15 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 13:55:07 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/24 14:21:41 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/24 18:17:45 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "struct.h"
+#include "../include/prototype.h"
+#include "struct.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 static int	ft_init_each_dongle(t_data *data, int i)
 {
