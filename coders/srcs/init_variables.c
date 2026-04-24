@@ -6,14 +6,14 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 10:24:56 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/24 18:04:16 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/24 18:34:49 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/prototype.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 static int	ft_init_print(t_data *data)
 {
@@ -30,20 +30,21 @@ static int	ft_init_simulation(t_data *data)
 {
 	data->is_ready = 0;
 	data->stop_simulation = false;
-    if (pthread_mutex_init(&data->sim_mutex, NULL) != 0)
+	if (pthread_mutex_init(&data->sim_mutex, NULL) != 0)
 	{
 		fprintf(stderr, "Error init simulation mutex\n");
 		ft_release_coders(data);
 		return (-1);
 	}
-    if (pthread_cond_init(&data->start_cond, NULL) != 0)
+	if (pthread_cond_init(&data->start_cond, NULL) != 0)
 	{
 		fprintf(stderr, "Error init start_cond \n");
 		ft_release_simulation(data);
 		return (-1);
 	}
-    return (0);
+	return (0);
 }
+
 static int	ft_init_coders(t_data *data)
 {
 	int	i;
@@ -55,9 +56,7 @@ static int	ft_init_coders(t_data *data)
 		ft_release_coders(data);
 		return (-1);
 	}
-
 	memset(data->coders, 0, sizeof(t_coder) * data->number_of_coders);
-
 	i = 0;
 	while (i < data->number_of_coders)
 	{
@@ -74,16 +73,12 @@ static int	ft_init_coders(t_data *data)
 int	ft_init_variables(t_data *data)
 {
 	if (ft_init_dongles(data) == -1)
-		return(-1);
-
+		return (-1);
 	if (ft_init_coders(data) == -1)
-		return(-1);
-
+		return (-1);
 	if (ft_init_simulation(data) == -1)
 		return (-1);
-
 	if (ft_init_print(data) == -1)
 		return (-1);
-
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 14:35:17 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/24 18:12:24 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/24 18:35:55 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-
-static void ft_drop_one_dongle(t_coder *coder, t_dongle *dongle)
+static void	ft_drop_one_dongle(t_coder *coder, t_dongle *dongle)
 {
 	pthread_mutex_lock(&dongle->mutex);
 	dongle->is_available = true;
@@ -25,7 +24,8 @@ static void ft_drop_one_dongle(t_coder *coder, t_dongle *dongle)
 	pthread_cond_broadcast(&dongle->cond);
 	pthread_mutex_unlock(&dongle->mutex);
 }
-void ft_drop_dongles(t_coder *coder)
+
+void	ft_drop_dongles(t_coder *coder)
 {
 	ft_drop_one_dongle(coder, coder->left_dongle);
 	if (coder->left_dongle == coder->right_dongle)
@@ -37,17 +37,16 @@ int	ft_check_simulation_stop(t_data *data)
 {
 	int	status;
 
-    pthread_mutex_lock(&data->sim_mutex);
-    status = data->stop_simulation;
-    pthread_mutex_unlock(&data->sim_mutex);
-
+	pthread_mutex_lock(&data->sim_mutex);
+	status = data->stop_simulation;
+	pthread_mutex_unlock(&data->sim_mutex);
 	return (status);
 }
+
 static void	ft_take_one_dongle(t_coder *coder, t_dongle *dongle)
 {
 	pthread_mutex_lock(&dongle->mutex);
 	ft_add_to_queue(dongle, coder);
-
 	while (dongle->is_available == false || !ft_is_my_turn(dongle, coder)
 		|| ft_get_time() < dongle->available_at)
 	{
@@ -68,26 +67,23 @@ static void	ft_take_one_dongle(t_coder *coder, t_dongle *dongle)
 	pthread_mutex_unlock(&dongle->mutex);
 }
 
-void ft_take_dongles(t_coder *coder)
+void	ft_take_dongles(t_coder *coder)
 {
-    t_dongle *first;
-    t_dongle *second;
+	t_dongle	*first;
+	t_dongle	*second;
 
-    if (coder->left_dongle->id < coder->right_dongle->id)
-    {
-        first = coder->left_dongle;
-        second = coder->right_dongle;
-    }
-    else
-    {
-        first = coder->right_dongle;
-        second = coder->left_dongle;
-    }
-
-    ft_take_one_dongle(coder, first);
-
-    if (first == second)
-        return ;
-
-    ft_take_one_dongle(coder, second);
+	if (coder->left_dongle->id < coder->right_dongle->id)
+	{
+		first = coder->left_dongle;
+		second = coder->right_dongle;
+	}
+	else
+	{
+		first = coder->right_dongle;
+		second = coder->left_dongle;
+	}
+	ft_take_one_dongle(coder, first);
+	if (first == second)
+		return ;
+	ft_take_one_dongle(coder, second);
 }

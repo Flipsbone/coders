@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 10:25:00 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/24 10:25:02 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/24 18:36:55 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ void	*ft_monitor_routine(void *param)
 	t_data	*data;
 
 	data = (t_data *)param;
-
 	pthread_mutex_lock(&data->sim_mutex);
 	while (data->is_ready == 0)
 	{
@@ -30,8 +29,6 @@ void	*ft_monitor_routine(void *param)
 		return (NULL);
 	}
 	pthread_mutex_unlock(&data->sim_mutex);
-
 	printf("Monitor is now watching...\n");
-
 	return (NULL);
 }

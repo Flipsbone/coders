@@ -6,12 +6,12 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 15:35:30 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/24 18:01:36 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/24 18:39:32 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CODEXION_H
-# define CODEXION_H
+#ifndef STRUCT_H
+# define STRUCT_H
 
 # include <pthread.h>
 # include <stdbool.h>
@@ -55,12 +55,11 @@ struct					s_dongle
 {
 	int					id;
 	pthread_mutex_t		mutex;
-	pthread_cond_t  	cond;
+	pthread_cond_t		cond;
 	bool				is_available;
 	long				available_at;
 	int					queue[2];
 	int					queue_size;
-
 };
 
 #endif

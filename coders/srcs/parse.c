@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 10:12:52 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/22 14:10:24 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/24 18:29:50 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static	void	ft_fill_data(t_data *data, int *tmp_args, char *scheduler)
+static void	ft_fill_data(t_data *data, int *tmp_args, char *scheduler)
 {
 	data->number_of_coders = tmp_args[0];
 	data->time_to_burnout = tmp_args[1];
@@ -26,7 +26,7 @@ static	void	ft_fill_data(t_data *data, int *tmp_args, char *scheduler)
 	data->scheduler = scheduler;
 }
 
-static	int	ft_check_coders(int coders)
+static int	ft_check_coders(int coders)
 {
 	if (coders == 0)
 	{
@@ -36,7 +36,7 @@ static	int	ft_check_coders(int coders)
 	return (0);
 }
 
-static	int	ft_numeric_str(const char *str)
+static int	ft_numeric_str(const char *str)
 {
 	long	result;
 	size_t	i;
@@ -55,20 +55,21 @@ static	int	ft_numeric_str(const char *str)
 	return (result);
 }
 
-static	int	ft_check_numb_arguments(int ac, char **av)
+static int	ft_check_numb_arguments(int ac, char **av)
 {
 	(void)av;
 	if (ac != 9)
 	{
 		fprintf(stderr,
-				"Error args must be :\n number_of_coders"
-				"time_to_burnout time_to_compile "
-				"time_to_debug time_to_refactor number_of_compiles_required "
-				"dongle_cooldown scheduler\n");
+			"Error args must be :\n number_of_coders"
+			"time_to_burnout time_to_compile "
+			"time_to_debug time_to_refactor number_of_compiles_required "
+			"dongle_cooldown scheduler\n");
 		return (-1);
 	}
 	return (0);
 }
+
 int	ft_parse_arguments(int ac, char **av, t_data *data)
 {
 	int	i;

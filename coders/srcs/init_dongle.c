@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 13:55:07 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/24 18:17:45 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/24 18:35:36 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ int	ft_init_dongles(t_data *data)
 		fprintf(stderr, "Error malloc dongles\n");
 		return (-1);
 	}
-
 	memset(data->dongles, 0, sizeof(t_dongle) * data->number_of_coders);
 	i = 0;
 	while (i < data->number_of_coders)
