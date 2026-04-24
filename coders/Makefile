@@ -11,6 +11,7 @@ FILES       = \
 			simulation.c \
 			monitor.c \
 			utils.c \
+			actions_dongle.c \
             parse.c
 
 SRCS        = $(addprefix $(SRC_DIR)/, $(FILES))

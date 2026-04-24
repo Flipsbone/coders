@@ -6,17 +6,28 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 10:25:15 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/24 11:58:18 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/24 17:54:28 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#define _DEFAULT_SOURCE
 #include "../include/prototype.h"
 #include "../include/struct.h"
 #include <stdio.h>
 #include <unistd.h>
 
-
+static int	ft_wait_for_start(t_data *data)
+{
+	pthread_mutex_lock(&data->sim_mutex);
+	while (data->is_ready == 0)
+		pthread_cond_wait(&data->start_cond, &data->sim_mutex);
+	if (data->is_ready == -1)
+	{
+		pthread_mutex_unlock(&data->sim_mutex);
+		return (-1);
+	}
+	pthread_mutex_unlock(&data->sim_mutex);
+	return (0);
+}
 
 static void	*ft_coder_routine(void *thread)
 {
@@ -25,42 +36,24 @@ static void	*ft_coder_routine(void *thread)
 
 	coder = (t_coder *)thread;
 	data = coder->data;
-
-	pthread_mutex_lock(&data->sim_mutex);
-	while (data->is_ready == 0)
-		pthread_cond_wait(&data->start_cond, &data->sim_mutex);
-	if (data->is_ready == -1)
-	{
-		pthread_mutex_unlock(&data->sim_mutex);
+	if (ft_wait_for_start(data) == -1)
 		return (NULL);
-	}
-	pthread_mutex_unlock(&data->sim_mutex);
-
 	coder->last_compile_start = data->start_time;
-
-	while (1)
+	while (ft_check_simulation_stop(data) == 0)
 	{
-		pthread_mutex_lock(&coder->left_dongle->mutex);
-		ft_print_status(data, coder->id, "has taken a dongle");
-
-		pthread_mutex_lock(&coder->right_dongle->mutex);
-		ft_print_status(data, coder->id, "has taken a dongle");
-
+		ft_take_dongles(coder);
 		coder->last_compile_start = ft_get_time();
 		ft_print_status(data, coder->id, "is compiling");
 		usleep(data->time_to_compile * 1000);
-
-		pthread_mutex_unlock(&coder->left_dongle->mutex);
-		pthread_mutex_unlock(&coder->right_dongle->mutex);
-
+		ft_drop_dongles(coder);
 		ft_print_status(data, coder->id, "is debugging");
 		usleep(data->time_to_debug * 1000);
-
 		ft_print_status(data, coder->id, "is refactoring");
 		usleep(data->time_to_refactor * 1000);
 	}
 	return (NULL);
 }
+
 static  int ft_finish_simulation(t_data *data)
 {
     int i;

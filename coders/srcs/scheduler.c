@@ -6,40 +6,72 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 10:24:45 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/24 10:45:53 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/24 17:33:21 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../include/prototype.h"
 #include "../include/struct.h"
 
-int ft_find_next_coder(t_dongle *dongle, t_data *data)
+void	ft_add_to_queue(t_dongle *dongle, t_coder *coder)
 {
-	int i;
-	int best_index;
+    if (dongle->queue_size < 2) // maybe delete
+    {
+        dongle->queue[dongle->queue_size] = coder->id;
+        dongle->queue_size++;
+    }
+}
 
-	if (dongle->queue_size == 0)
-		return (-1);
+void ft_remove_from_queue(t_dongle *dongle, t_coder *coder)
+{
+    if (dongle->queue_size == 0)
+        return;
 
-	best_index = 0;
-	i = 0;
-	if (strcmp(data->scheduler, "edf") == 0)
-	{
-		while ( i != data->number_of_coders)
-		{
-			last_time = data->start_time - data->coders->last_compile_start;
-			time_to_burnout = data->time_to_burnout - last_time;
-			if (time_to_burnout > 0)
-			{
-				if (time_to_burnout < tmp)
-				{
-					best_index = i;
-					tmp = time_to_burnout;
-				}
-			}
-			else
-			(
-				data->coders->flag_burnout = 1;
-			)
-		}
-	}
+    if (dongle->queue[0] == coder->id)
+    {
+        dongle->queue[0] = dongle->queue[1];
+        dongle->queue[1] = 0;
+        dongle->queue_size--;
+    }
+    else if (dongle->queue_size == 2 && dongle->queue[1] == coder->id)
+    {
+        dongle->queue[1] = 0;
+        dongle->queue_size--;
+    }
+}
+static int ft_check_fifo(t_dongle *dongle, t_coder *coder)
+{
+	if (dongle->queue[0] == coder->id)
+		return (1);
+	return (0);
+}
+
+static int ft_check_edf(t_dongle *dongle, t_coder *coder)
+{
+	t_coder	*other;
+	long	my_deadline;
+	long	other_deadline;
+	int		other_id;
+
+	if (dongle->queue[0] == coder->id)
+		other_id = dongle->queue[1];
+	else
+		other_id = dongle->queue[0];
+	other = &coder->data->coders[other_id - 1];
+	my_deadline = coder->last_compile_start + coder->data->time_to_burnout;
+	other_deadline = other->last_compile_start + coder->data->time_to_burnout;
+	if (my_deadline < other_deadline)
+		return (1);
+	if (my_deadline == other_deadline)
+		return (ft_check_fifo(dongle, coder));
+	return (0);
+}
+
+int	ft_is_my_turn(t_dongle *dongle, t_coder *coder)
+{
+	if (dongle->queue_size <= 1)
+		return (1);
+	if (strcmp(coder->data->scheduler, "fifo") == 0)
+		return (ft_check_fifo(dongle, coder));
+	return (ft_check_edf(dongle, coder));
 }

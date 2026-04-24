@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 13:55:07 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/24 13:57:48 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/24 14:21:41 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 static int	ft_init_each_dongle(t_data *data, int i)
 {
 	data->dongles[i].id = i + 1;
-	data->dongles[i].is_available = 1;
+	data->dongles[i].is_available = true;
 	data->dongles[i].queue_size = 0;
 	data->dongles[i].queue[0] = 0;
 	data->dongles[i].queue[1] = 0;

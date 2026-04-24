@@ -171,3 +171,6 @@ Plutôt que de laisser les codeurs se jeter sur les dongles il faut mettre en pl
     Le codeur s'endort (pthread_cond_wait).
 
     Quand le dongle est libre, c'est le dongle lui-même (ou plutôt la fonction de libération) qui regarde sa file d'attente, choisit le gagnant selon la règle (FIFO ou EDF), et le réveille (pthread_cond_signal).
+
+
+

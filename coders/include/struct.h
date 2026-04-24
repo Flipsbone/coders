@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 15:35:30 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/23 14:42:48 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/24 17:19:34 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define CODEXION_H
 
 # include <pthread.h>
+# include <stdbool.h>
 
 typedef struct s_coder	t_coder;
 typedef struct s_dongle	t_dongle;
@@ -53,6 +54,12 @@ struct					s_dongle
 {
 	int					id;
 	pthread_mutex_t		mutex;
+	pthread_cond_t  	cond;
+	bool				is_available;
+	long				available_at;
+	int					queue[2];
+	int					queue_size;
+
 };
 
 #endif
