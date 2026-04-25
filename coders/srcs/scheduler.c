@@ -59,8 +59,10 @@ static int	ft_check_edf(t_dongle *dongle, t_coder *coder)
 	else
 		other_id = dongle->queue[0];
 	other = &coder->data->coders[other_id - 1];
+	pthread_mutex_lock(&coder->data->sim_mutex);
 	my_deadline = coder->last_compile_start + coder->data->time_to_burnout;
 	other_deadline = other->last_compile_start + coder->data->time_to_burnout;
+	pthread_mutex_unlock(&coder->data->sim_mutex);
 	if (my_deadline < other_deadline)
 		return (1);
 	if (my_deadline == other_deadline)
