@@ -16,6 +16,16 @@
 #include <stdio.h>
 #include <unistd.h>
 
+
+static void ft_wait_cooldown(t_dongle *dongle)
+{
+    struct timespec wait_until;
+    
+    wait_until.tv_sec = dongle->available_at / 1000;
+    wait_until.tv_nsec = (dongle->available_at % 1000) * 1000000;
+    pthread_cond_timedwait(&dongle->cond, &dongle->mutex, &wait_until);
+}
+
 static void	ft_drop_one_dongle(t_coder *coder, t_dongle *dongle)
 {
 	pthread_mutex_lock(&dongle->mutex);
@@ -42,7 +52,7 @@ static int	ft_should_wait(t_dongle *dongle, t_coder *coder)
 	if (!ft_is_my_turn(dongle, coder))
 		return (1);
 	if (ft_get_time() < dongle->available_at)
-		return (1);
+		return (2);
 	return (0);
 }
 
@@ -56,19 +66,28 @@ int	ft_check_simulation_stop(t_data *data)
 	return (status);
 }
 
-static void	ft_take_one_dongle(t_coder *coder, t_dongle *dongle)
+static void ft_take_one_dongle(t_coder *coder, t_dongle *dongle)
 {
-	pthread_mutex_lock(&dongle->mutex);
-	ft_add_to_queue(dongle, coder);
-	while (ft_should_wait(dongle, coder))
-		pthread_cond_wait(&dongle->cond, &dongle->mutex);
-	if (!ft_check_simulation_stop(coder->data))
-	{
-		dongle->is_available = false;
-		ft_print_status(coder->data, coder->id, "has taken a dongle");
-	}
-	ft_remove_from_queue(dongle, coder);
-	pthread_mutex_unlock(&dongle->mutex);
+    int wait_status;
+
+    pthread_mutex_lock(&dongle->mutex);
+    ft_add_to_queue(dongle, coder);
+    wait_status = ft_should_wait(dongle, coder);
+    while (wait_status != 0)
+    {
+        if (wait_status == 1)
+            pthread_cond_wait(&dongle->cond, &dongle->mutex);
+        else if (wait_status == 2)
+            ft_wait_cooldown(dongle);
+        wait_status = ft_should_wait(dongle, coder);
+    }
+    if (!ft_check_simulation_stop(coder->data))
+    {
+        dongle->is_available = false;
+        ft_print_status(coder->data, coder->id, "has taken a dongle");
+    }
+    ft_remove_from_queue(dongle, coder);
+    pthread_mutex_unlock(&dongle->mutex);
 }
 
 int	ft_take_dongles(t_coder *coder)
