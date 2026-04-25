@@ -39,11 +39,13 @@ static void	*ft_coder_routine(void *thread)
 	data = coder->data;
 	if (ft_wait_for_start(data) == -1)
 		return (NULL);
-	coder->last_compile_start = data->start_time;
 	while (ft_check_simulation_stop(data) == 0)
 	{
 		ft_take_dongles(coder);
+		pthread_mutex_lock(&data->sim_mutex);
 		coder->last_compile_start = ft_get_time();
+		coder->nb_compiles++;
+		pthread_mutex_unlock(&data->sim_mutex);
 		ft_print_status(data, coder->id, "is compiling");
 		usleep(data->time_to_compile * 1000);
 		ft_drop_dongles(coder);
@@ -100,6 +102,7 @@ static int	ft_create_coders(t_data *data)
 
 int	ft_start_simulation(t_data *data)
 {
+	int	i;
 	if (ft_create_coders(data) == -1)
 		return (-1);
 	if (pthread_create(&data->monitor, NULL, &ft_monitor_routine, data) != 0)
@@ -111,9 +114,16 @@ int	ft_start_simulation(t_data *data)
 		ft_finish_simulation(data);
 		return (-1);
 	}
+	
 	pthread_mutex_lock(&data->sim_mutex);
-	data->is_ready = 1;
 	data->start_time = ft_get_time();
+	data->is_ready = 1;
+	i = 0;
+	while (i < data->number_of_coders)
+	{
+		data->coders[i].last_compile_start = data->start_time; 
+    	i++;
+	}
 	pthread_cond_broadcast(&data->start_cond);
 	pthread_mutex_unlock(&data->sim_mutex);
 	if (ft_finish_simulation(data) == -1)
