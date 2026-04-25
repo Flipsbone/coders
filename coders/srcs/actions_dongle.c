@@ -33,6 +33,19 @@ void	ft_drop_dongles(t_coder *coder)
 	ft_drop_one_dongle(coder, coder->right_dongle);
 }
 
+static int	ft_should_wait(t_dongle *dongle, t_coder *coder)
+{
+	if (ft_check_simulation_stop(coder->data))
+		return (0);
+	if (dongle->is_available == false)
+		return (1);
+	if (!ft_is_my_turn(dongle, coder))
+		return (1);
+	if (ft_get_time() < dongle->available_at)
+		return (1);
+	return (0);
+}
+
 int	ft_check_simulation_stop(t_data *data)
 {
 	int	status;
@@ -47,27 +60,18 @@ static void	ft_take_one_dongle(t_coder *coder, t_dongle *dongle)
 {
 	pthread_mutex_lock(&dongle->mutex);
 	ft_add_to_queue(dongle, coder);
-	while (dongle->is_available == false || !ft_is_my_turn(dongle, coder)
-		|| ft_get_time() < dongle->available_at)
+	while (ft_should_wait(dongle, coder))
+		pthread_cond_wait(&dongle->cond, &dongle->mutex);
+	if (!ft_check_simulation_stop(coder->data))
 	{
-		if (dongle->is_available == true && ft_is_my_turn(dongle, coder))
-		{
-			pthread_mutex_unlock(&dongle->mutex);
-			usleep(100);
-			pthread_mutex_lock(&dongle->mutex);
-		}
-		else
-		{
-			pthread_cond_wait(&dongle->cond, &dongle->mutex);
-		}
+		dongle->is_available = false;
+		ft_print_status(coder->data, coder->id, "has taken a dongle");
 	}
-	dongle->is_available = false;
 	ft_remove_from_queue(dongle, coder);
-	ft_print_status(coder->data, coder->id, "has taken a dongle");
 	pthread_mutex_unlock(&dongle->mutex);
 }
 
-void	ft_take_dongles(t_coder *coder)
+int	ft_take_dongles(t_coder *coder)
 {
 	t_dongle	*first;
 	t_dongle	*second;
@@ -83,7 +87,19 @@ void	ft_take_dongles(t_coder *coder)
 		second = coder->left_dongle;
 	}
 	ft_take_one_dongle(coder, first);
+	if (ft_check_simulation_stop(coder->data))
+		return (-1);
 	if (first == second)
-		return ;
+	{
+		while (!ft_check_simulation_stop(coder->data))
+        	usleep(1000);
+		return (-1);
+	}
 	ft_take_one_dongle(coder, second);
+	if (ft_check_simulation_stop(coder->data))
+	{
+		ft_drop_one_dongle(coder, first);
+		return (-1);
+	}
+	return (0);
 }

@@ -25,7 +25,7 @@ int		ft_init_dongles(t_data *data);
 
 void	ft_add_to_queue(t_dongle *dongle, t_coder *coder);
 void	ft_remove_from_queue(t_dongle *dongle, t_coder *coder);
-void	ft_take_dongles(t_coder *coder);
+int     ft_take_dongles(t_coder *coder);
 int		ft_check_simulation_stop(t_data *data);
 void	ft_drop_dongles(t_coder *coder);
 int		ft_is_my_turn(t_dongle *dongle, t_coder *coder);

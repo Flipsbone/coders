@@ -41,23 +41,25 @@ static void	*ft_coder_routine(void *thread)
 		return (NULL);
 	while (ft_check_simulation_stop(data) == 0)
 	{
-		ft_take_dongles(coder);
-		pthread_mutex_lock(&data->sim_mutex);
-		coder->last_compile_start = ft_get_time();
-		coder->nb_compiles++;
-		pthread_mutex_unlock(&data->sim_mutex);
-		ft_print_status(data, coder->id, "is compiling");
-		usleep(data->time_to_compile * 1000);
-		ft_drop_dongles(coder);
-		ft_print_status(data, coder->id, "is debugging");
-		usleep(data->time_to_debug * 1000);
-		ft_print_status(data, coder->id, "is refactoring");
-		usleep(data->time_to_refactor * 1000);
+		if (ft_take_dongles(coder) == 0)
+		{
+			pthread_mutex_lock(&data->sim_mutex);
+			coder->last_compile_start = ft_get_time();
+			coder->nb_compiles++;
+			pthread_mutex_unlock(&data->sim_mutex);
+			ft_print_status(data, coder->id, "is compiling");
+			usleep(data->time_to_compile * 1000);
+			ft_drop_dongles(coder);
+			ft_print_status(data, coder->id, "is debugging");
+			usleep(data->time_to_debug * 1000);
+			ft_print_status(data, coder->id, "is refactoring");
+			usleep(data->time_to_refactor * 1000);
+		}
 	}
 	return (NULL);
 }
 
-static int	ft_finish_simulation(t_data *data)
+int	ft_finish_simulation(t_data *data)
 {
 	int	i;
 
