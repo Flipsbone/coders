@@ -38,11 +38,29 @@ void	ft_release_simulation(t_data *data)
 	while (i < data->number_of_coders)
 	{
 		pthread_mutex_destroy(&data->dongles[i].mutex);
+		pthread_cond_destroy(&data->dongles[i].cond);
 		i++;
 	}
+	pthread_mutex_destroy(&data->sim_mutex);
+	pthread_cond_destroy(&data->start_cond);
 	free(data->dongles);
 	free(data->coders);
+}
+
+void	ft_release_simulation_mutex(t_data *data)
+{
+		int	i;
+
+	i = 0;
+	while (i < data->number_of_coders)
+	{
+		pthread_mutex_destroy(&data->dongles[i].mutex);
+		pthread_cond_destroy(&data->dongles[i].cond);
+		i++;
+	}
 	pthread_mutex_destroy(&data->sim_mutex);
+	free(data->dongles);
+	free(data->coders);
 }
 
 void	ft_release_coders(t_data *data)

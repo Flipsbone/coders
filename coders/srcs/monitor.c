@@ -8,7 +8,7 @@ static void	ft_stop_all(t_data *data)
 	int	i;
 
 	pthread_mutex_lock(&data->sim_mutex);
-	data->stop_simulation = 1;
+	data->stop_simulation = true;
 	pthread_mutex_unlock(&data->sim_mutex);
 	i = 0;
 	while (i < data->number_of_coders)

@@ -39,7 +39,7 @@ static int	ft_init_simulation(t_data *data)
 	if (pthread_cond_init(&data->start_cond, NULL) != 0)
 	{
 		fprintf(stderr, "Error init start_cond \n");
-		ft_release_simulation(data);
+		ft_release_simulation_mutex(data);
 		return (-1);
 	}
 	return (0);
