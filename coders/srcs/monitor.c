@@ -2,29 +2,11 @@
 #include "../include/struct.h"
 #include <unistd.h>
 
-static void ft_wake_up_all(t_data *data)
-{
-	int	i;
-
-	data->stop_simulation = true;
-	i = 0;
-	while (i < data->number_of_coders)
-	{
-		pthread_mutex_lock(&data->dongles[i].mutex);
-		pthread_cond_broadcast(&data->dongles[i].cond);
-		pthread_mutex_unlock(&data->dongles[i].mutex);
-		i++;
-	}
-}
 
 static int ft_check_status(t_data *data)
 {
-	int		i;
-	int		finished;
 	long	now;
 
-	i = 0;
-	finished = 0;
 	now = ft_get_time();
 	if (now == -1)
 {
@@ -34,29 +16,9 @@ static int ft_check_status(t_data *data)
 		ft_wake_up_all(data);
 		return (-1);
 	}
-
 	pthread_mutex_lock(&data->sim_mutex);
-	while (i < data->number_of_coders)
-	{
-		if (now - data->coders[i].last_compile_start > data->time_to_burnout)
-		{
-			data->stop_simulation = true;
-			pthread_mutex_unlock(&data->sim_mutex);
-			ft_wake_up_all(data);
-			ft_print_status(data, data->coders[i].id, "burned out");
-			return (0);
-		}
-		if (data->coders[i].nb_compiles >= data->number_of_compiles_required)
-			finished++;
-		i++;
-	}
-	if (finished == data->number_of_coders)
-	{
-		data->stop_simulation = true;
-		pthread_mutex_unlock(&data->sim_mutex);
-		ft_wake_up_all(data);
+	if (ft_evaluate_coders(data, now) == 1)
 		return (0);
-	}
 	pthread_mutex_unlock(&data->sim_mutex);
 	return (0);
 }

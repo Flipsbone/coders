@@ -5,16 +5,20 @@ INC_DIR     = include
 OBJ_DIR     = .obj
 
 FILES       = \
-			codexion.c \
-			init_variables.c \
-			release.c \
-			simulation.c \
-			monitor.c \
-			utils.c \
-			init_dongle.c \
-			actions_dongle.c \
-			scheduler.c \
-            parse.c
+            codexion.c \
+            parse.c \
+            init.c \
+            init_dongle.c \
+            clean.c \
+            simulation.c \
+            simulation_utils.c \
+            monitor.c \
+            monitor_utils.c \
+            dongle.c \
+            dongle_utils.c \
+            scheduler.c \
+            scheduler_utils.c \
+            utils.c
 
 SRCS        = $(addprefix $(SRC_DIR)/, $(FILES))
 OBJS        = $(addprefix $(OBJ_DIR)/, $(FILES:.c=.o))

@@ -13,50 +13,6 @@
 #include "../include/prototype.h"
 #include "../include/struct.h"
 #include <stdio.h>
-#include <unistd.h>
-
-static int	ft_wait_for_start(t_data *data)
-{
-	pthread_mutex_lock(&data->sim_mutex);
-	while (data->is_ready == 0)
-		pthread_cond_wait(&data->start_cond, &data->sim_mutex);
-	if (data->is_ready == -1)
-	{
-		pthread_mutex_unlock(&data->sim_mutex);
-		return (-1);
-	}
-	pthread_mutex_unlock(&data->sim_mutex);
-	return (0);
-}
-
-static void	*ft_coder_routine(void *thread)
-{
-	t_coder	*coder;
-	t_data	*data;
-
-	coder = (t_coder *)thread;
-	data = coder->data;
-	if (ft_wait_for_start(data) == -1)
-		return (NULL);
-	while (ft_check_simulation_stop(data) == 0)
-	{
-		if (ft_take_dongles(coder) == 0)
-		{
-			pthread_mutex_lock(&data->sim_mutex);
-			coder->last_compile_start = ft_get_time();
-			coder->nb_compiles++;
-			pthread_mutex_unlock(&data->sim_mutex);
-			ft_print_status(data, coder->id, "is compiling");
-			usleep(data->time_to_compile * 1000);
-			ft_drop_dongles(coder);
-			ft_print_status(data, coder->id, "is debugging");
-			usleep(data->time_to_debug * 1000);
-			ft_print_status(data, coder->id, "is refactoring");
-			usleep(data->time_to_refactor * 1000);
-		}
-	}
-	return (NULL);
-}
 
 int	ft_finish_simulation(t_data *data)
 {
@@ -105,10 +61,26 @@ static int	ft_create_coders(t_data *data)
 	return (0);
 }
 
-int	ft_start_simulation(t_data *data)
+static void	ft_set_start_time(t_data *data)
 {
 	int	i;
-	void *monitor_return;
+
+	pthread_mutex_lock(&data->sim_mutex);
+	data->start_time = ft_get_time();
+	data->is_ready = 1;
+	i = 0;
+	while (i < data->number_of_coders)
+	{
+		data->coders[i].last_compile_start = data->start_time;
+		i++;
+	}
+	pthread_cond_broadcast(&data->start_cond);
+	pthread_mutex_unlock(&data->sim_mutex);
+}
+
+int	ft_start_simulation(t_data *data)
+{
+	void	*monitor_return;
 
 	if (ft_create_coders(data) == -1)
 		return (-1);
@@ -121,29 +93,14 @@ int	ft_start_simulation(t_data *data)
 		ft_finish_simulation(data);
 		return (-1);
 	}
-	
-	pthread_mutex_lock(&data->sim_mutex);
-	data->start_time = ft_get_time();
-	data->is_ready = 1;
-	i = 0;
-	while (i < data->number_of_coders)
-	{
-		data->coders[i].last_compile_start = data->start_time; 
-    	i++;
-	}
-	pthread_cond_broadcast(&data->start_cond);
-	pthread_mutex_unlock(&data->sim_mutex);
+	ft_set_start_time(data);
 	if (ft_finish_simulation(data) == -1)
 		return (-1);
-	if (pthread_join(data->monitor, &monitor_return) != 0)
+	if (pthread_join(data->monitor, &monitor_return) != 0
+		|| monitor_return != NULL)
 	{
-    	fprintf(stderr, "Error: Failed to join monitor thread\n");
+		fprintf(stderr, "Error: Monitor join failed or runtime error\n");
 		return (-1);
 	}
-	if (monitor_return != NULL)
-    {
-        fprintf(stderr, "Error: Monitor encountered a runtime error\n");
-        return (-1);
-    }
 	return (0);
 }
