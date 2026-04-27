@@ -17,7 +17,7 @@ static void ft_stop_all(t_data *data)
 	}
 }
 
-static void ft_check_status(t_data *data)
+static int ft_check_status(t_data *data)
 {
 	int		i;
 	int		finished;
@@ -26,6 +26,12 @@ static void ft_check_status(t_data *data)
 	i = 0;
 	finished = 0;
 	now = ft_get_time();
+	if (now == -1)
+	{
+		ft_stop_all(data);
+		return (-1);
+	}
+
 	pthread_mutex_lock(&data->sim_mutex);
 	while (i < data->number_of_coders)
 	{
@@ -43,6 +49,8 @@ static void ft_check_status(t_data *data)
 	if (finished == data->number_of_coders)
 		ft_stop_all(data);
 	pthread_mutex_unlock(&data->sim_mutex);
+
+	return (0);
 }
 
 void	*ft_monitor_routine(void *param)
@@ -61,7 +69,8 @@ void	*ft_monitor_routine(void *param)
 	pthread_mutex_unlock(&data->sim_mutex);
 	while (ft_check_simulation_stop(data) == 0)
 	{
-		ft_check_status(data);
+		if (ft_check_status(data) == -1)
+			return ((void *)-1);
 		usleep(1000);
 	}
 	return (NULL);

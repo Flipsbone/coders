@@ -108,6 +108,8 @@ static int	ft_create_coders(t_data *data)
 int	ft_start_simulation(t_data *data)
 {
 	int	i;
+	void *monitor_return;
+
 	if (ft_create_coders(data) == -1)
 		return (-1);
 	if (pthread_create(&data->monitor, NULL, &ft_monitor_routine, data) != 0)
@@ -133,11 +135,15 @@ int	ft_start_simulation(t_data *data)
 	pthread_mutex_unlock(&data->sim_mutex);
 	if (ft_finish_simulation(data) == -1)
 		return (-1);
-	if (pthread_join(data->monitor, NULL) != 0)
+	if (pthread_join(data->monitor, &monitor_return) != 0)
 	{
     	fprintf(stderr, "Error: Failed to join monitor thread\n");
 		return (-1);
 	}
-
+	if (monitor_return != NULL)
+    {
+        fprintf(stderr, "Error: Monitor encountered a runtime error\n");
+        return (-1);
+    }
 	return (0);
 }
