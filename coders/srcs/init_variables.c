@@ -53,7 +53,7 @@ static int	ft_init_coders(t_data *data)
 	if (!data->coders)
 	{
 		fprintf(stderr, "Error malloc coders\n");
-		ft_release_coders(data);
+		ft_release_dongle(data->number_of_coders, data);
 		return (-1);
 	}
 	memset(data->coders, 0, sizeof(t_coder) * data->number_of_coders);

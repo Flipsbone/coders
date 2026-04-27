@@ -53,6 +53,7 @@ void	ft_release_coders(t_data *data)
 	while (i < data->number_of_coders)
 	{
 		pthread_mutex_destroy(&data->dongles[i].mutex);
+		pthread_cond_destroy(&data->dongles[i].cond);
 		i++;
 	}
 	free(data->dongles);
