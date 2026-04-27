@@ -21,13 +21,14 @@ void	ft_release_all(t_data *data)
 	while (i < data->number_of_coders)
 	{
 		pthread_mutex_destroy(&data->dongles[i].mutex);
+		pthread_cond_destroy(&data->dongles[i].cond);
 		i++;
 	}
-	free(data->dongles);
-	free(data->coders);
 	pthread_mutex_destroy(&data->sim_mutex);
 	pthread_cond_destroy(&data->start_cond);
 	pthread_mutex_destroy(&data->print_mutex);
+	free(data->dongles);
+	free(data->coders);
 }
 
 void	ft_release_simulation(t_data *data)

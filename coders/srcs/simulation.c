@@ -92,7 +92,11 @@ static int	ft_create_coders(t_data *data)
 			pthread_mutex_unlock(&data->sim_mutex);
 			while (--i >= 0)
 			{
-				pthread_join(data->coders[i].thread_id, NULL);
+				if (pthread_join(data->coders[i].thread_id, NULL) != 0 )
+				{
+					fprintf(stderr, "Error: Failed to join thread coders %d\n", i);
+					return (-1);
+				}
 			}
 			return (-1);
 		}
@@ -130,6 +134,10 @@ int	ft_start_simulation(t_data *data)
 	if (ft_finish_simulation(data) == -1)
 		return (-1);
 	if (pthread_join(data->monitor, NULL) != 0)
+	{
+    	fprintf(stderr, "Error: Failed to join monitor thread\n");
 		return (-1);
+	}
+
 	return (0);
 }
