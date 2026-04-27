@@ -234,3 +234,132 @@ Les Dongles = Les Mutexes (Ressources partagées) : dois protéger l'état de ch
 
 
 
+dans is_ready de la simulation jai 3 etat ok = 1 stand-by = 0 erreur = -1 
+
+
+simulation cest la (Synchronisation au démarrage)
+car les thread parte tous en meme temps. lobjectif cest de les faire commencer seulement quand tous le monde est creer .
+
+Résumé de l'utilité : 
+Élément             Rôle                        Pourquoi ?
+is_ready            Barrière de départ          Garantit que tous les codeurs partent en même temps.
+start_cond          Signal de départ            Réveille tous les threads endormis d'un coup.
+stop_simulation     Interrupteur global         Arrête proprement tous les threads lors d'un burnout 
+                                                ou fin de mission.
+sim_mutex   Gardien                     Empêche les Data Races sur les flags ci-dessus.
+
+
+lors de la creation des thread si y a un probleme :
+
+Le secret : pthread_cond_wait déverrouille le mutex pour toi
+
+Quand tu appelles pthread_cond_wait(&data->start_cond, &data->sim_mutex);, la fonction exécute une opération indivisible en trois étapes précises :
+
+    Elle met le thread en sommeil.
+
+    Elle DÉVERROUILLE automatiquement le mutex (data->sim_mutex).
+
+    Elle attend le signal de réveil.
+
+chaque thread va etre plonger dans un sommeil attendant le signal de depart ou de lerreur. 
+
+pthread_cond_broadcast réveille tous les threads en attente afin qu'ils vérifient la valeur modifiée de is_ready (-1), leur permettant ainsi de sortir de leur boucle d'exécution et de terminer proprement pour que le thread principal puisse les join sans interblocage.
+
+lors du broadcast deux chemin peux se faire : 
+les threads se reveille mais non pas encore la main sur le mutex donc il attend , 
+une fois le mutex_unlock de la simulation fait 
+le threads qui est dans la condition wait recupere le lock et travaille soit il va dans la boucle erreur soit il passe le temoins a un autre thread . 
+il n y a donc jamais de lock ou d unlock 2 fois 
+
+
+ensuite tu fais la meme chose avec le monitor 
+
+puis une fois que tout le monde est sur la ligne de depart tu broadcast le message go !! 
+tout le monde sactive en meme temps 
+
+le but de monitor : 
+verifier quand arreter le programme 
+lors dun bournout 
+ou lorsque tout les thread ont compiler suffisameent 
+
+precission : 
+usleep n'est pas "temps réel", usleep ne garantit pas une précision à la microseconde près.
+
+    Quand tu fais usleep(1000), tu dis au système d'exploitation : "S'il te plaît, endors ce thread pour au moins 1 milliseconde".
+
+    Le système d'exploitation (Linux/macOS) a son propre planificateur de threads (scheduler). Il est possible que le système mette un peu plus de temps à réveiller ton thread (par exemple 1.2ms ou 1.5ms) s'il est très occupé par d'autres tâches.
+
+
+
+pour la fonction du stop on s adresse on dongle et pas au thread : 
+Pourquoi s'adresser aux dongles ?
+
+Si tu ne signales pas la condition du dongle (dongle->cond), le thread qui attend ce dongle va rester "figé" dans son pthread_cond_timedwait jusqu'à la fin de son timeout (le temps que tu as défini dans ft_wait_for_dongle).
+
+Même si tu mets data->stop_simulation = true dans ta structure, le thread, lui, ne le sait pas ! Il est en train de dormir profondément dans la bibliothèque système.
+
+En faisant pthread_cond_broadcast sur la condition du dongle :
+
+    Tu forces le réveil immédiat de tous les threads qui attendaient sur ce dongle précis.
+    Le thread se réveille, sort de son wait.
+    Il revient dans la boucle while (ft_check_simulation_stop(data) == 0) dans ft_coder_routine.
+    À ce moment-là, il vérifie le flag stop_simulation qui est désormais à true, et il s'arrête proprement.
+
+
+
+ensuite tout le monde registre ces propre dongle dans leur liste dattente 
+codeur 1 enregistre le 0 et le 1 
+le codeur 2 veut enregistrer le 1 et le 2 dongle mais il ne peux pas car le 1 a deja le dongle 1 
+le codeur 3 enregistre le 2 et le 3
+
+
+
+
+resumer de ce qui se passe apres le top depart : 
+Dans un programme multithreadé, il faut imaginer que plusieurs "personnes" (les threads) travaillent en même temps. Voici exactement ce qu'il se passe de manière chronologique dans ton code :
+1. Le chef d'orchestre (le Thread Principal)
+
+C'est le thread qui lance le programme. Son rôle dans ft_start_simulation est de :
+
+    Créer les codeurs (ft_create_coders).
+
+    Créer le monitor (pthread_create(&data->monitor, ...)).
+
+    Donner le signal de départ (le fameux pthread_cond_broadcast).
+
+    Se mettre en pause en appelant pthread_join sur les codeurs (via ft_finish_simulation). Il attend que les codeurs aient terminé.
+
+    Une fois les codeurs terminés, il appelle pthread_join(data->monitor, ...) pour attendre que le monitor finisse.
+
+2. Les ouvriers (Les Threads Codeurs)
+
+Dès qu'ils reçoivent le signal de départ, ils rentrent dans leur boucle while (ft_check_simulation_stop(data) == 0). Ils vont boucler sans fin (prendre les dongles, compiler, debug, etc.) tant que personne ne change la variable stop_simulation.
+3. Le surveillant (Le Thread Monitor)
+
+Lui, il a sa propre fonction (ft_monitor_routine). Dès le signal de départ, il fait ça :
+
+    Il rentre dans une boucle infinie.
+
+    Il regarde l'heure (ft_check_status).
+
+    S'il voit qu'un codeur a dépassé le temps (now - last_compile_start > time_to_burnout) :
+
+        Il change data->stop_simulation = true.
+
+        Il affiche le message burned out.
+
+        Il quitte sa fonction avec un return. (C'est à ce moment précis que le thread monitor "meurt" / se termine).
+
+L'effet domino (La fin de la simulation)
+
+Voici comment tout s'emboîte au moment où le monitor détecte la mort :
+
+    Le Monitor met stop_simulation à true et se termine (il a fini son job).
+
+    Au tour de boucle suivant, les Codeurs voient que stop_simulation est à true. Ils quittent leur boucle while et se terminent.
+
+    Le Thread Principal, qui était bloqué dans son pthread_join à attendre les codeurs, est débloqué (puisqu'ils viennent de se terminer).
+
+    Le Thread Principal passe à la ligne suivante : le pthread_join(data->monitor, ...). Comme le monitor est déjà terminé (depuis l'étape 1), ce join se valide instantanément sans attendre.
+
+    Le programme principal s'arrête.

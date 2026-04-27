@@ -20,20 +20,17 @@ static void ft_lock_both_dongles(t_dongle *left, t_dongle *right)
         pthread_mutex_lock(&left->mutex);
         pthread_mutex_lock(&right->mutex);
     }
-    else if (left->id > right->id)
+    else
     {
         pthread_mutex_lock(&right->mutex);
         pthread_mutex_lock(&left->mutex);
     }
-    else
-        pthread_mutex_lock(&left->mutex);
 }
 
 static void ft_unlock_both_dongles(t_dongle *left, t_dongle *right)
 {
     pthread_mutex_unlock(&left->mutex);
-    if (left != right)
-        pthread_mutex_unlock(&right->mutex);
+    pthread_mutex_unlock(&right->mutex);
 }
 
 static int ft_can_take_dongle(t_dongle *dongle, t_coder *coder)
@@ -69,49 +66,39 @@ int ft_take_dongles(t_coder *coder)
 
     if (left == right)
     {
-        pthread_mutex_lock(&left->mutex);
         ft_print_status(coder->data, coder->id, "has taken a dongle");
-        pthread_mutex_unlock(&left->mutex);
         while (!ft_check_simulation_stop(coder->data))
             usleep(1000);
-        return (-1);
+        return (1);
     }
 
     ft_lock_both_dongles(left, right);
     ft_add_to_queue(left, coder);
-    if (left != right)
-        ft_add_to_queue(right, coder);
+    ft_add_to_queue(right, coder);
     ft_unlock_both_dongles(left, right);
 
     while (!ft_check_simulation_stop(coder->data))
     {
         ft_lock_both_dongles(left, right);
         
-        if (ft_can_take_dongle(left, coder) && (left == right || ft_can_take_dongle(right, coder)))
+        if (ft_can_take_dongle(left, coder) && ft_can_take_dongle(right, coder))
         {
             left->is_available = false;
+            right->is_available = false;
             ft_remove_from_queue(left, coder);
-            ft_print_status(coder->data, coder->id, "has taken a dongle");
-            
-            if (left != right)
-            {
-                right->is_available = false;
-                ft_remove_from_queue(right, coder);
-                ft_print_status(coder->data, coder->id, "has taken a dongle");
-            }
+            ft_remove_from_queue(right, coder);
             ft_unlock_both_dongles(left, right);
+            ft_print_status(coder->data, coder->id, "has taken a dongle");
+            ft_print_status(coder->data, coder->id, "has taken a dongle");
             return (0);
         }
-        
         blocking_dongle = left;
-        if (ft_can_take_dongle(left, coder) && left != right && !ft_can_take_dongle(right, coder))
-            blocking_dongle = right;
-            
+        if (ft_can_take_dongle(left, coder) && !ft_can_take_dongle(right, coder))
+            blocking_dongle = right;   
         ft_unlock_both_dongles(left, right);
-        
         ft_wait_for_dongle(blocking_dongle);
     }
-    return (-1);
+    return (1);
 }
 
 static void ft_drop_one_dongle(t_coder *coder, t_dongle *dongle)
@@ -126,7 +113,5 @@ static void ft_drop_one_dongle(t_coder *coder, t_dongle *dongle)
 void ft_drop_dongles(t_coder *coder)
 {
     ft_drop_one_dongle(coder, coder->left_dongle);
-    if (coder->left_dongle == coder->right_dongle)
-        return ;
     ft_drop_one_dongle(coder, coder->right_dongle);
 }

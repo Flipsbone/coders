@@ -13,13 +13,25 @@
 #include "../include/prototype.h"
 #include <stdio.h>
 #include <sys/time.h>
+#include <string.h>
 
 void	ft_print_status(t_data *data, int id, char *status)
 {
 	long	time;
+	int		stop;
+	long	start;
 
+	pthread_mutex_lock(&data->sim_mutex);
+	stop = data->stop_simulation;
+	start = data->start_time;
+	pthread_mutex_unlock(&data->sim_mutex);
 	pthread_mutex_lock(&data->print_mutex);
-	time = ft_get_time() - data->start_time;
+	if (stop && strcmp(status, "burned out") != 0)
+	{
+		pthread_mutex_unlock(&data->print_mutex);
+		return ;
+	}
+	time = ft_get_time() - start;
 	printf("%ld %d %s\n", time, id, status);
 	pthread_mutex_unlock(&data->print_mutex);
 }

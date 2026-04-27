@@ -48,6 +48,16 @@ static int	ft_check_fifo(t_dongle *dongle, t_coder *coder)
 	return (0);
 }
 
+static long ft_get_last_compile(t_coder *coder)
+{
+	long time;
+	
+	pthread_mutex_lock(&coder->data->sim_mutex);
+	time = coder->last_compile_start;
+	pthread_mutex_unlock(&coder->data->sim_mutex);
+	return (time);
+}
+
 static int	ft_check_edf(t_dongle *dongle, t_coder *coder)
 {
 	int		index;
@@ -62,8 +72,7 @@ static int	ft_check_edf(t_dongle *dongle, t_coder *coder)
 		if (dongle->queue[index] != coder->id)
 		{
 			other_coder = &coder->data->coders[dongle->queue[index] - 1];
-			other_deadline = other_coder->last_compile_start 
-				+ coder->data->time_to_burnout;
+			other_deadline = ft_get_last_compile(other_coder) + coder->data->time_to_burnout;
 			if (other_deadline < current_deadline)
 				return (0);
 			if (other_deadline == current_deadline)

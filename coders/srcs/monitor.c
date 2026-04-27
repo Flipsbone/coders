@@ -2,7 +2,7 @@
 #include "../include/struct.h"
 #include <unistd.h>
 
-static void ft_stop_all(t_data *data)
+static void ft_wake_up_all(t_data *data)
 {
 	int	i;
 
@@ -27,8 +27,11 @@ static int ft_check_status(t_data *data)
 	finished = 0;
 	now = ft_get_time();
 	if (now == -1)
-	{
-		ft_stop_all(data);
+{
+		pthread_mutex_lock(&data->sim_mutex);
+		data->stop_simulation = true;
+		pthread_mutex_unlock(&data->sim_mutex);
+		ft_wake_up_all(data);
 		return (-1);
 	}
 
@@ -37,8 +40,9 @@ static int ft_check_status(t_data *data)
 	{
 		if (now - data->coders[i].last_compile_start > data->time_to_burnout)
 		{
-			ft_stop_all(data);
+			data->stop_simulation = true;
 			pthread_mutex_unlock(&data->sim_mutex);
+			ft_wake_up_all(data);
 			ft_print_status(data, data->coders[i].id, "burned out");
 			return (0);
 		}
@@ -47,9 +51,13 @@ static int ft_check_status(t_data *data)
 		i++;
 	}
 	if (finished == data->number_of_coders)
-		ft_stop_all(data);
+	{
+		data->stop_simulation = true;
+		pthread_mutex_unlock(&data->sim_mutex);
+		ft_wake_up_all(data);
+		return (0);
+	}
 	pthread_mutex_unlock(&data->sim_mutex);
-
 	return (0);
 }
 

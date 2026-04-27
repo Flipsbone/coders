@@ -1,47 +1,36 @@
 #!/bin/bash
 
 EXEC="./codexion"
+VALGRIND="valgrind --tool=helgrind"
 
-# Couleurs pour le terminal
 GREEN='\033[0;32m'
-RED='\033[0;31m'
 YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
 NC='\033[0m'
 
-if [ ! -f "$EXEC" ]; then
-    echo -e "${RED}Erreur : L'exécutable $EXEC est introuvable. As-tu fait 'make' ?${NC}"
-    exit 1
-fi
+echo -e "${YELLOW}=== TESTS HELGRIND : CHASSE AUX DATA RACES ===${NC}"
+echo -e "Rappel : Helgrind ralentit le programme. Des burnouts prématurés sont normaux."
+echo -e "L'objectif est d'avoir 0 erreur (ou 1 seule erreur si c'est le faux positif glibc).\n"
 
-echo -e "${YELLOW}=== TESTS DE GESTION DES ERREURS ===${NC}"
-echo "Test d'un scheduler invalide (doit être rejeté)..."
-$EXEC 4 410 200 200 0 5 10 random_scheduler
-echo "Test avec des arguments manquants..."
-$EXEC 4 410 200 200 0 5 10
+# ---------------------------------------------------------
+echo -e "${CYAN}Test 1 : Le Solitaire (1 codeur)${NC}"
+echo "Objectif : Vérifier que la routine spéciale à 1 codeur n'a pas de fuite/data race au moment de la mort."
+$VALGRIND $EXEC 1 800 200 200 100 2 20 fifo 2>&1 | grep "ERROR SUMMARY"
 
-echo -e "\n${YELLOW}=== TESTS DE SURVIE BASIQUE ===${NC}"
-echo -e "${GREEN}Test 1 : FIFO - 4 codeurs tranquilles${NC}"
-# Ils ont largement le temps (410ms) pour des actions de 200ms. Personne ne doit mourir.
-$EXEC 4 410 200 200 0 5 10 fifo
+# ---------------------------------------------------------
+echo -e "${CYAN}Test 2 : Le Trafic Fluide (4 codeurs, FIFO)${NC}"
+echo "Objectif : Vérifier la gestion classique des mutexes et des files d'attente sans conflit majeur."
+$VALGRIND $EXEC 4 800 200 200 100 2 20 fifo 2>&1 | grep "ERROR SUMMARY"
 
-echo -e "${GREEN}Test 2 : EDF - 4 codeurs tranquilles${NC}"
-# Même chose, mais avec EDF. Le comportement doit être similaire.
-$EXEC 4 410 200 200 0 5 10 edf
+# ---------------------------------------------------------
+echo -e "${CYAN}Test 3 : Le Conflit Direct & Tie-Breaker (5 codeurs, EDF)${NC}"
+echo "Objectif : Forcer 3 threads à réclamer les mêmes dongles en même temps avec la même deadline."
+# Des temps très courts forcent le CPU à faire beaucoup de context switches, ce qui trahit les data races.
+$VALGRIND $EXEC 5 150 40 10 0 2 10 edf 2>&1 | grep "ERROR SUMMARY"
 
+# ---------------------------------------------------------
+echo -e "${CYAN}Test 4 : Le Crash Test d'Arrêt d'Urgence (5 codeurs, FIFO)${NC}"
+echo "Objectif : Un burnout rapide. Vérifier que la fonction ft_stop_all du monitor coupe proprement tous les threads sans data race."
+$VALGRIND $EXEC 5 100 80 80 0 10 10 fifo 2>&1 | grep "ERROR SUMMARY"
 
-echo -e "\n${YELLOW}=== TESTS SOUS PRESSION (La vraie différence) ===${NC}"
-# Explication : Avec 3 codeurs et des temps très serrés, il y aura forcément une file d'attente pour les dongles.
-# FIFO donne le dongle au premier qui a demandé, même si un autre codeur va faire un "burnout" dans 1ms.
-# EDF donne le dongle à celui qui a la deadline de burnout la plus proche[cite: 189].
-
-echo -e "${RED}Test 3 : Le crash test FIFO (Un burnout est très probable ou attendu)${NC}"
-$EXEC 3 120 40 40 0 5 10 fifo
-
-echo -e "${GREEN}Test 4 : Le sauvetage EDF (Ils devraient tous survivre)${NC}"
-# Ici, le scheduler EDF doit prioriser celui qui est sur le point de mourir, permettant au groupe de survivre.
-$EXEC 3 120 40 40 0 5 10 edf
-
-
-echo -e "\n${YELLOW}=== TEST AVEC REFACTORING ===${NC}"
-echo -e "${GREEN}Test 5 : Cycle complet avec refactoring (EDF)${NC}"
-$EXEC 5 800 200 200 100 3 20 edf
+echo -e "\n${GREEN}=== FIN DES TESTS ===${NC}"
