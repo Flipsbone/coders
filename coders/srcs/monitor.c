@@ -40,7 +40,7 @@ static int ft_check_status(t_data *data)
 			ft_stop_all(data);
 			pthread_mutex_unlock(&data->sim_mutex);
 			ft_print_status(data, data->coders[i].id, "burned out");
-			return ;
+			return (0);
 		}
 		if (data->coders[i].nb_compiles >= data->number_of_compiles_required)
 			finished++;
