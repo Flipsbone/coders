@@ -67,6 +67,16 @@ int ft_take_dongles(t_coder *coder)
     t_dongle *right = coder->right_dongle;
     t_dongle *blocking_dongle;
 
+    if (left == right)
+    {
+        pthread_mutex_lock(&left->mutex);
+        ft_print_status(coder->data, coder->id, "has taken a dongle");
+        pthread_mutex_unlock(&left->mutex);
+        while (!ft_check_simulation_stop(coder->data))
+            usleep(1000);
+        return (-1);
+    }
+
     ft_lock_both_dongles(left, right);
     ft_add_to_queue(left, coder);
     if (left != right)
