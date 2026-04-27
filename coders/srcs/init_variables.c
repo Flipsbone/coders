@@ -29,6 +29,7 @@ static int	ft_init_print(t_data *data)
 static int	ft_init_simulation(t_data *data)
 {
 	data->is_ready = 0;
+	data->start_time = 0;
 	data->stop_simulation = false;
 	if (pthread_mutex_init(&data->sim_mutex, NULL) != 0)
 	{
