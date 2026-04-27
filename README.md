@@ -174,3 +174,63 @@ Plutôt que de laisser les codeurs se jeter sur les dongles il faut mettre en pl
 
 
 
+
+
+
+
+actions_dongle : 
+attribution des dongles lors du premier tour : 
+
+algorithmique, la Hiérarchie des ressources (ou solution de Dijkstra). En forçant tous tes threads à toujours acquérir les ressources partagées (les mutex des dongles) dans un ordre global strict (du plus petit ID au plus grand), 
+je brise la condition d'attente circulaire. Il est mathématiquement impossible d'avoir un deadlock général avec cette méthode.
+Le problème : L'Attente Circulaire (Le scénario catastrophe)
+
+1. Le problème : L'Attente Circulaire (Le scénario catastrophe)
+
+Imaginons la méthode naïve, où chaque codeur prend toujours son dongle de gauche d'abord, puis celui de droite. Prenons une table avec 3 codeurs et 3 dongles :
+
+    Codeur 1 est entre le Dongle 1 (gauche) et le Dongle 2 (droite).
+
+    Codeur 2 est entre le Dongle 2 (gauche) et le Dongle 3 (droite).
+
+    Codeur 3 est entre le Dongle 3 (gauche) et le Dongle 1 (droite).
+
+Si tous les codeurs démarrent exactement en même temps et sont parfaitement synchronisés :
+
+    Codeur 1 prend le Dongle 1.
+
+    Codeur 2 prend le Dongle 2.
+
+    Codeur 3 prend le Dongle 3.
+
+Résultat : Tout le monde a un dongle en main. Maintenant, tout le monde cherche son deuxième dongle :
+
+    Codeur 1 veut le Dongle 2... qui est bloqué par le Codeur 2.
+
+    Codeur 2 veut le Dongle 3... qui est bloqué par le Codeur 3.
+
+    Codeur 3 veut le Dongle 1... qui est bloqué par le Codeur 1.
+
+C'est l'attente circulaire. La boucle est fermée. Personne ne lâchera son premier dongle avant d'avoir le deuxième, et le deuxième n'arrivera jamais. Le programme est figé pour l'éternité (ou jusqu'au burnout).
+
+2. La solution : La Hiérarchie des Ressources (Ton code)
+
+Ton code introduit une règle absolue et universelle : "On prend TOUJOURS le dongle avec le plus petit ID en premier, peu importe s'il est à gauche ou à droite."
+
+Reprenons exactement la même table de 3 codeurs avec cette nouvelle règle :
+
+    Codeur 1 a les Dongles 1 et 2. Il doit prendre le 1 en premier.
+
+    Codeur 2 a les Dongles 2 et 3. Il doit prendre le 2 en premier.
+
+    Codeur 3 a les Dongles 3 et 1. Il doit prendre le 1 en premier (car 1 < 3).
+
+
+
+Les Codeurs = Les Threads : Comme tu l'as très bien souligné, le sujet impose que chaque codeur soit représenté par un thread (pthread_create).
+
+Les Dongles = Les Mutexes (Ressources partagées) : dois protéger l'état de chaque dongle avec un mutex (pthread_mutex_t) pour éviter qu'ils ne soient dupliqués par les codeurs.
+
+
+
+

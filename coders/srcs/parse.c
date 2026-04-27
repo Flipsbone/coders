@@ -36,7 +36,7 @@ static int	ft_check_coders(int coders)
 	return (0);
 }
 
-static int	ft_numeric_str(const char *str)
+static int	ft_str_to_numeric(const char *str)
 {
 	long	result;
 	size_t	i;
@@ -80,7 +80,7 @@ int	ft_parse_arguments(int ac, char **av, t_data *data)
 	i = 1;
 	while (av[i] && i <= 7)
 	{
-		tmp_args[i - 1] = ft_numeric_str(av[i]);
+		tmp_args[i - 1] = ft_str_to_numeric(av[i]);
 		if (tmp_args[i - 1] == -1)
 		{
 			fprintf(stderr, "Error args must be positif integer\n");

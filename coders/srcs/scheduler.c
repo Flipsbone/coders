@@ -13,6 +13,7 @@
 #include "../include/prototype.h"
 #include "../include/struct.h"
 #include <string.h>
+#include <stdio.h>
 
 void	ft_add_to_queue(t_dongle *dongle, t_coder *coder)
 {
@@ -49,25 +50,31 @@ static int	ft_check_fifo(t_dongle *dongle, t_coder *coder)
 
 static int	ft_check_edf(t_dongle *dongle, t_coder *coder)
 {
-	t_coder	*other;
-	long	my_deadline;
+	int		index;
+	long	current_deadline;
 	long	other_deadline;
-	int		other_id;
+	t_coder	*other_coder;
 
-	if (dongle->queue[0] == coder->id)
-		other_id = dongle->queue[1];
-	else
-		other_id = dongle->queue[0];
-	other = &coder->data->coders[other_id - 1];
-	pthread_mutex_lock(&coder->data->sim_mutex);
-	my_deadline = coder->last_compile_start + coder->data->time_to_burnout;
-	other_deadline = other->last_compile_start + coder->data->time_to_burnout;
-	pthread_mutex_unlock(&coder->data->sim_mutex);
-	if (my_deadline < other_deadline)
-		return (1);
-	if (my_deadline == other_deadline)
-		return (ft_check_fifo(dongle, coder));
-	return (0);
+	current_deadline = coder->last_compile_start + coder->data->time_to_burnout;
+	index = 0;
+	while (index < dongle->queue_size)
+	{
+		if (dongle->queue[index] != coder->id)
+		{
+			other_coder = &coder->data->coders[dongle->queue[index] - 1];
+			other_deadline = other_coder->last_compile_start 
+				+ coder->data->time_to_burnout;
+			if (other_deadline < current_deadline)
+				return (0);
+			if (other_deadline == current_deadline)
+			{
+				if (dongle->queue[index] < coder->id)
+					return (0);
+			}
+		}
+		index++;
+	}
+	return (1);
 }
 
 int	ft_is_my_turn(t_dongle *dongle, t_coder *coder)
