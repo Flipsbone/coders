@@ -20,6 +20,7 @@ static int	ft_init_each_dongle(t_data *data, int i)
 {
 	data->dongles[i].id = i + 1;
 	data->dongles[i].is_available = true;
+	data->dongles[i].available_at = 0;
 	data->dongles[i].queue_size = 0;
 	data->dongles[i].queue[0] = 0;
 	data->dongles[i].queue[1] = 0;
@@ -47,7 +48,6 @@ int	ft_init_dongles(t_data *data)
 		fprintf(stderr, "Error malloc dongles\n");
 		return (-1);
 	}
-	memset(data->dongles, 0, sizeof(t_dongle) * data->number_of_coders);
 	i = 0;
 	while (i < data->number_of_coders)
 	{
