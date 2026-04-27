@@ -32,6 +32,7 @@ int		ft_is_my_turn(t_dongle *dongle, t_coder *coder);
 
 void	ft_release_coders(t_data *data);
 void	ft_release_dongle(int i, t_data *data);
+void	ft_release_simulation_mutex(t_data *data);
 void	ft_release_simulation(t_data *data);
 void	ft_release_all(t_data *data);
 

@@ -1,4 +1,3 @@
-#define _DEFAULT_SOURCE
 #include "../include/prototype.h"
 #include "../include/struct.h"
 #include <unistd.h>

@@ -1,4 +1,3 @@
-#define _DEFAULT_SOURCE
 #include "../include/prototype.h"
 #include "../include/struct.h"
 #include <stdio.h>
@@ -51,8 +50,9 @@ static int ft_can_take_dongle(t_dongle *dongle, t_coder *coder)
 static void ft_wait_for_dongle(t_dongle *target)
 {
     struct timespec wait_until;
-    long time_to_wake = ft_get_time() + 2;
+    long time_to_wake; 
     
+    time_to_wake = ft_get_time() + 2;
     wait_until.tv_sec = time_to_wake / 1000;
     wait_until.tv_nsec = (time_to_wake % 1000) * 1000000;
     

@@ -21,7 +21,7 @@ OBJS        = $(addprefix $(OBJ_DIR)/, $(FILES:.c=.o))
 DEPS        = $(addprefix $(OBJ_DIR)/, $(FILES:.c=.d))
 
 CC          = cc
-CFLAGS      = -Wall -Wextra -Werror -MMD -I$(INC_DIR) -g3 -pthread -std=c89
+CFLAGS      = -Wall -Wextra -Werror -MMD -I$(INC_DIR) -g3 -pthread
 
 all: $(NAME)
 
