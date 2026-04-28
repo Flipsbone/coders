@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 10:38:42 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/28 10:41:40 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/28 15:32:34 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static int	ft_check_status(t_data *data)
 	if (now == -1)
 	{
 		pthread_mutex_lock(&data->sim_mutex);
-		data->stop_simulation = true;
+		data->stop_simulation = SIM_FINISHED;
 		pthread_mutex_unlock(&data->sim_mutex);
 		ft_wake_up_all(data);
 		return (-1);

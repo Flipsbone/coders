@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 10:38:32 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/28 10:42:06 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/28 15:33:02 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	ft_check_burnout(t_data *data, int i, long now)
 {
 	if (now - data->coders[i].last_compile_start > data->time_to_burnout)
 	{
-		data->stop_simulation = true;
+		data->stop_simulation = SIM_BURNOUT;
 		pthread_mutex_unlock(&data->sim_mutex);
 		ft_wake_up_all(data);
 		ft_print_status(data, data->coders[i].id, "burned out");
@@ -57,7 +57,7 @@ int	ft_evaluate_coders(t_data *data, long now)
 	}
 	if (finished == data->number_of_coders)
 	{
-		data->stop_simulation = true;
+		data->stop_simulation = SIM_FINISHED;
 		pthread_mutex_unlock(&data->sim_mutex);
 		ft_wake_up_all(data);
 		return (1);

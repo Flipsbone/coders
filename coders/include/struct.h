@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 15:35:30 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/24 18:39:32 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/28 16:25:12 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,13 @@
 
 typedef struct s_coder	t_coder;
 typedef struct s_dongle	t_dongle;
+
+typedef enum e_sim_state
+{
+	SIM_RUNNING = 0,
+	SIM_BURNOUT = 1,
+	SIM_FINISHED = 2
+}	t_sim_state;
 
 typedef struct s_data
 {
@@ -34,7 +41,7 @@ typedef struct s_data
 	pthread_t			monitor;
 	int					is_ready;
 	pthread_mutex_t		sim_mutex;
-	bool				stop_simulation;
+	t_sim_state			stop_simulation;
 	pthread_cond_t		start_cond;
 	long				start_time;
 	pthread_mutex_t		print_mutex;

@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 10:24:56 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/28 10:39:15 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/28 15:32:14 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static int	ft_init_simulation(t_data *data)
 {
 	data->is_ready = 0;
 	data->start_time = 0;
-	data->stop_simulation = false;
+	data->stop_simulation = SIM_RUNNING;
 	if (pthread_mutex_init(&data->sim_mutex, NULL) != 0)
 	{
 		fprintf(stderr, "Error init simulation mutex\n");
