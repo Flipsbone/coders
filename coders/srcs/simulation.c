@@ -6,13 +6,26 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 10:25:15 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/24 17:58:37 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/28 10:49:13 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/prototype.h"
 #include "../include/struct.h"
 #include <stdio.h>
+
+static void	ft_join_coders(int i, t_data *data)
+{
+	while (--i >= 0)
+	{
+		if (pthread_join(data->coders[i].thread_id, NULL) != 0)
+		{
+			fprintf(stderr, "Error: Failed to join thread coders %d\n",
+				i);
+			return ;
+		}
+	}
+}
 
 int	ft_finish_simulation(t_data *data)
 {
@@ -46,14 +59,7 @@ static int	ft_create_coders(t_data *data)
 			data->is_ready = -1;
 			pthread_cond_broadcast(&data->start_cond);
 			pthread_mutex_unlock(&data->sim_mutex);
-			while (--i >= 0)
-			{
-				if (pthread_join(data->coders[i].thread_id, NULL) != 0 )
-				{
-					fprintf(stderr, "Error: Failed to join thread coders %d\n", i);
-					return (-1);
-				}
-			}
+			ft_join_coders(i, data);
 			return (-1);
 		}
 		i++;
@@ -80,7 +86,7 @@ static void	ft_set_start_time(t_data *data)
 
 int	ft_start_simulation(t_data *data)
 {
-	void	*monitor_return;
+	void	*monitor_return ;
 
 	if (ft_create_coders(data) == -1)
 		return (-1);

@@ -1,15 +1,26 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   monitor.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/04/28 10:38:42 by advacher          #+#    #+#             */
+/*   Updated: 2026/04/28 10:41:40 by advacher         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/prototype.h"
 #include "../include/struct.h"
 #include <unistd.h>
 
-
-static int ft_check_status(t_data *data)
+static int	ft_check_status(t_data *data)
 {
 	long	now;
 
 	now = ft_get_time();
 	if (now == -1)
-{
+	{
 		pthread_mutex_lock(&data->sim_mutex);
 		data->stop_simulation = true;
 		pthread_mutex_unlock(&data->sim_mutex);

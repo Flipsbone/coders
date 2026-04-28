@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   dongle.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/04/28 10:37:48 by advacher          #+#    #+#             */
+/*   Updated: 2026/04/28 10:39:44 by advacher         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/prototype.h"
 #include "../include/struct.h"
 #include <unistd.h>
@@ -28,7 +40,8 @@ static int	ft_try_take_loop(t_coder *coder, t_dongle *left, t_dongle *right)
 		if (ft_check_and_take(coder, left, right))
 			return (0);
 		blocking_dongle = left;
-		if (ft_can_take_dongle(left, coder) && !ft_can_take_dongle(right, coder))
+		if (ft_can_take_dongle(left, coder) && !ft_can_take_dongle(right,
+				coder))
 			blocking_dongle = right;
 		ft_unlock_both_dongles(left, right);
 		ft_wait_for_dongle(blocking_dongle);

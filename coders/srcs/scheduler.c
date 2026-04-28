@@ -12,8 +12,8 @@
 
 #include "../include/prototype.h"
 #include "../include/struct.h"
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 
 static int	ft_check_fifo(t_dongle *dongle, t_coder *coder)
 {
@@ -36,7 +36,8 @@ static int	ft_check_edf(t_dongle *dongle, t_coder *coder)
 		if (dongle->queue[index] != coder->id)
 		{
 			other_coder = &coder->data->coders[dongle->queue[index] - 1];
-			other_deadline = ft_get_last_compile(other_coder) + coder->data->time_to_burnout;
+			other_deadline = ft_get_last_compile(other_coder)
+				+ coder->data->time_to_burnout;
 			if (other_deadline < current_deadline)
 				return (0);
 			if (other_deadline == current_deadline)

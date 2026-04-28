@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   release.c                                          :+:      :+:    :+:   */
+/*   clean.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 10:25:08 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/24 18:32:19 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/28 10:39:00 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void	ft_release_simulation(t_data *data)
 
 void	ft_release_simulation_mutex(t_data *data)
 {
-		int	i;
+	int	i;
 
 	i = 0;
 	while (i < data->number_of_coders)
