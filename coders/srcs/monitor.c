@@ -19,14 +19,6 @@ static int	ft_check_status(t_data *data)
 	long	now;
 
 	now = ft_get_time();
-	if (now == -1)
-	{
-		pthread_mutex_lock(&data->sim_mutex);
-		data->stop_simulation = SIM_FINISHED;
-		pthread_mutex_unlock(&data->sim_mutex);
-		ft_wake_up_all(data);
-		return (-1);
-	}
 	pthread_mutex_lock(&data->sim_mutex);
 	if (ft_evaluate_coders(data, now) == 1)
 		return (0);

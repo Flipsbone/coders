@@ -48,13 +48,14 @@ void	*ft_coder_routine(void *thread)
 			coder->nb_compiles++;
 			pthread_mutex_unlock(&data->sim_mutex);
 			ft_print_status(data, coder->id, "is compiling");
-			usleep(data->time_to_compile * 1000);
+			ft_usleep(data->time_to_compile, data);
 			ft_drop_dongles(coder);
 			ft_print_status(data, coder->id, "is debugging");
-			usleep(data->time_to_debug * 1000);
+			ft_usleep(data->time_to_debug, data);
 			ft_print_status(data, coder->id, "is refactoring");
-			usleep(data->time_to_refactor * 1000);
+			ft_usleep(data->time_to_refactor, data);
 		}
+		
 	}
 	return (NULL);
 }

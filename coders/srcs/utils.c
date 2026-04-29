@@ -13,7 +13,9 @@
 #include "../include/prototype.h"
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include <sys/time.h>
+
 
 int	ft_check_simulation_stop(t_data *data)
 {
@@ -23,6 +25,19 @@ int	ft_check_simulation_stop(t_data *data)
 	status = data->stop_simulation;
 	pthread_mutex_unlock(&data->sim_mutex);
 	return (status);
+}
+
+void	ft_usleep(long time_to_sleep, t_data *data)
+{
+	long	start;
+
+	start = ft_get_time();
+	while ((ft_get_time() - start) < time_to_sleep)
+	{
+		if (ft_check_simulation_stop(data) != 0)
+			break ;		
+		usleep(1000); 
+	}
 }
 
 void	ft_print_status(t_data *data, int id, char *status)
@@ -50,7 +65,6 @@ long	ft_get_time(void)
 {
 	struct timeval	time;
 
-	if (gettimeofday(&time, NULL) == -1)
-		return (-1);
+	gettimeofday(&time, NULL);
 	return ((time.tv_sec * 1000) + (time.tv_usec / 1000));
 }
