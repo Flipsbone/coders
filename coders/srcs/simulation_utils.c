@@ -37,6 +37,8 @@ void	*ft_coder_routine(void *thread)
 	data = coder->data;
 	if (ft_wait_for_start(data) == -1)
 		return (NULL);
+	if (coder->id % 2 == 0)
+		usleep(1000);
 	while (ft_check_simulation_stop(data) == 0)
 	{
 		if (ft_take_dongles(coder) == 0)

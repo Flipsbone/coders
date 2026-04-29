@@ -14,9 +14,9 @@
 #include "../include/struct.h"
 #include <unistd.h>
 
-void	ft_lock_both_dongles(t_dongle *left, t_dongle *right)
+void	ft_lock_both_dongles(t_coder *coder, t_dongle *left, t_dongle *right)
 {
-	if (left->id < right->id)
+	if (coder->id % 2 != 0)
 	{
 		pthread_mutex_lock(&left->mutex);
 		pthread_mutex_lock(&right->mutex);

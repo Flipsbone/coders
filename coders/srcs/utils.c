@@ -28,12 +28,10 @@ int	ft_check_simulation_stop(t_data *data)
 void	ft_print_status(t_data *data, int id, char *status)
 {
 	long		time;
-	int			stop;
 	long		start;
 	t_sim_state	stop_reason;
 
 	pthread_mutex_lock(&data->sim_mutex);
-	stop = data->stop_simulation;
 	start = data->start_time;
 	stop_reason = data->stop_simulation;
 	if (stop_reason == SIM_BURNOUT)

@@ -34,11 +34,11 @@ static int	ft_wait_for_dongles(t_coder *coder, t_dongle *left, t_dongle *right)
 {
 	while (!ft_check_simulation_stop(coder->data))
 	{
-		ft_lock_both_dongles(left, right);
+		ft_lock_both_dongles(coder, left, right);
 		if (ft_check_and_take(coder, left, right))
 			return (0);
 		ft_unlock_both_dongles(left, right);
-		usleep(1000);
+		usleep(500);
 	}
 	return (1);
 }
@@ -58,7 +58,7 @@ int	ft_take_dongles(t_coder *coder)
 			usleep(1000);
 		return (1);
 	}
-	ft_lock_both_dongles(left, right);
+	ft_lock_both_dongles(coder, left, right);
 	ft_add_to_queue(left, coder);
 	ft_add_to_queue(right, coder);
 	ft_unlock_both_dongles(left, right);

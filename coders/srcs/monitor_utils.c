@@ -30,14 +30,12 @@ void	ft_wake_up_all(t_data *data)
 int	ft_check_burnout(t_data *data, int i, long now)
 {
 	long		time;
-	int			stop;
 	long		start;
 
 
 	if (now - data->coders[i].last_compile_start > data->time_to_burnout)
 	{
 		data->stop_simulation = SIM_BURNOUT;
-		stop = data->stop_simulation;
 		start = data->start_time;
 		pthread_mutex_unlock(&data->sim_mutex);
 		ft_wake_up_all(data);

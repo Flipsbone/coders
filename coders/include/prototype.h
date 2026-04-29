@@ -30,7 +30,7 @@ int		ft_evaluate_coders(t_data *data, long now);
 
 int		ft_take_dongles(t_coder *coder);
 void	ft_drop_dongles(t_coder *coder);
-void	ft_lock_both_dongles(t_dongle *left, t_dongle *right);
+void	ft_lock_both_dongles(t_coder *coder, t_dongle *left, t_dongle *right);
 void	ft_unlock_both_dongles(t_dongle *left, t_dongle *right);
 int		ft_can_take_dongle(t_dongle *dongle, t_coder *coder);
 void	ft_wait_for_dongle(t_dongle *target);
