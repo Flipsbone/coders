@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 10:24:45 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/29 11:38:59 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/29 15:17:12 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,36 +17,31 @@
 
 static int	ft_check_fifo(t_dongle *dongle, t_coder *coder)
 {
-	if (dongle->queue[0] == coder->id)
-		return (1);
-	return (0);
+	return (dongle->queue[0] == coder->id);
 }
 
 static int	ft_check_edf(t_dongle *dongle, t_coder *coder)
 {
-	int		index;
-	long	current_deadline;
+	long	coder_deadline;
 	long	other_deadline;
-	t_coder	*other_coder;
+	int		other_id;
+	t_coder	*other;
 
-	current_deadline = coder->last_compile_start + coder->data->time_to_burnout;
-	index = 0;
-	while (index < dongle->queue_size)
+	other_id = dongle->queue[0];
+	if (other_id == coder->id)
+		other_id = dongle->queue[1];
+	other = &coder->data->coders[other_id - 1];
+	coder_deadline = ft_get_last_compile(coder) + coder->data->time_to_burnout;
+	other_deadline = ft_get_last_compile(other) + coder->data->time_to_burnout;
+	if (other_deadline < coder_deadline)
+		return (0);
+	if (other_deadline == coder_deadline)
 	{
-		if (dongle->queue[index] != coder->id)
-		{
-			other_coder = &coder->data->coders[dongle->queue[index] - 1];
-			other_deadline = ft_get_last_compile(other_coder)
-				+ coder->data->time_to_burnout;
-			if (other_deadline < current_deadline)
-				return (0);
-			if (other_deadline == current_deadline)
-			{
-				if (dongle->queue[index] < coder->id)
-					return (0);
-			}
-		}
-		index++;
+		if (ft_get_nb_compiles(other) < ft_get_nb_compiles(coder))
+			return (0);
+		if (ft_get_nb_compiles(other) == ft_get_nb_compiles(coder)
+			&& other_id < coder->id)
+			return (0);
 	}
 	return (1);
 }
