@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 10:37:48 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/29 14:29:22 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/29 16:22:15 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static int	ft_wait_for_dongles(t_coder *coder, t_dongle *left, t_dongle *right)
 		if (ft_check_and_take(coder, left, right))
 			return (0);
 		ft_unlock_both_dongles(left, right);
-		usleep(2000);
+		usleep(1000);
 	}
 	return (1);
 }
