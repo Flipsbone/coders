@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 10:37:48 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/29 14:17:48 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/29 14:29:22 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static int	ft_check_and_take(t_coder *coder, t_dongle *left, t_dongle *right)
 	return (0);
 }
 
-static int	ft_try_take_loop(t_coder *coder, t_dongle *left, t_dongle *right)
+static int	ft_wait_for_dongles(t_coder *coder, t_dongle *left, t_dongle *right)
 {
 	while (!ft_check_simulation_stop(coder->data))
 	{
@@ -62,7 +62,7 @@ int	ft_take_dongles(t_coder *coder)
 	ft_add_to_queue(left, coder);
 	ft_add_to_queue(right, coder);
 	ft_unlock_both_dongles(left, right);
-	status = ft_try_take_loop(coder, left, right);
+	status = ft_wait_for_dongles(coder, left, right);
 	return (status);
 }
 
