@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 10:37:48 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/29 10:14:16 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/29 14:17:48 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,19 +32,13 @@ static int	ft_check_and_take(t_coder *coder, t_dongle *left, t_dongle *right)
 
 static int	ft_try_take_loop(t_coder *coder, t_dongle *left, t_dongle *right)
 {
-	t_dongle	*blocking_dongle;
-
 	while (!ft_check_simulation_stop(coder->data))
 	{
 		ft_lock_both_dongles(left, right);
 		if (ft_check_and_take(coder, left, right))
 			return (0);
-		blocking_dongle = left;
-		if (ft_can_take_dongle(left, coder) && !ft_can_take_dongle(right,
-				coder))
-			blocking_dongle = right;
 		ft_unlock_both_dongles(left, right);
-		ft_wait_for_dongle(blocking_dongle);
+		usleep(2000);
 	}
 	return (1);
 }
@@ -77,7 +71,6 @@ static void	ft_drop_one_dongle(t_coder *coder, t_dongle *dongle)
 	pthread_mutex_lock(&dongle->mutex);
 	dongle->is_available = true;
 	dongle->available_at = ft_get_time() + coder->data->dongle_cooldown;
-	pthread_cond_broadcast(&dongle->cond);
 	pthread_mutex_unlock(&dongle->mutex);
 }
 

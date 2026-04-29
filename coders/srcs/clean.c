@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 10:25:08 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/28 10:39:00 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/29 14:20:15 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ void	ft_release_all(t_data *data)
 	while (i < data->number_of_coders)
 	{
 		pthread_mutex_destroy(&data->dongles[i].mutex);
-		pthread_cond_destroy(&data->dongles[i].cond);
 		i++;
 	}
 	pthread_mutex_destroy(&data->sim_mutex);
@@ -39,7 +38,6 @@ void	ft_release_simulation(t_data *data)
 	while (i < data->number_of_coders)
 	{
 		pthread_mutex_destroy(&data->dongles[i].mutex);
-		pthread_cond_destroy(&data->dongles[i].cond);
 		i++;
 	}
 	pthread_mutex_destroy(&data->sim_mutex);
@@ -56,7 +54,6 @@ void	ft_release_simulation_mutex(t_data *data)
 	while (i < data->number_of_coders)
 	{
 		pthread_mutex_destroy(&data->dongles[i].mutex);
-		pthread_cond_destroy(&data->dongles[i].cond);
 		i++;
 	}
 	pthread_mutex_destroy(&data->sim_mutex);
@@ -72,7 +69,6 @@ void	ft_release_coders(t_data *data)
 	while (i < data->number_of_coders)
 	{
 		pthread_mutex_destroy(&data->dongles[i].mutex);
-		pthread_cond_destroy(&data->dongles[i].cond);
 		i++;
 	}
 	free(data->dongles);
@@ -87,7 +83,6 @@ void	ft_release_dongle(int i, t_data *data)
 	while (j < i)
 	{
 		pthread_mutex_destroy(&data->dongles[j].mutex);
-		pthread_cond_destroy(&data->dongles[j].cond);
 		j++;
 	}
 	free(data->dongles);

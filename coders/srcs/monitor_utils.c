@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 10:38:32 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/29 11:56:46 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/29 14:20:59 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ void	ft_wake_up_all(t_data *data)
 	while (i < data->number_of_coders)
 	{
 		pthread_mutex_lock(&data->dongles[i].mutex);
-		pthread_cond_broadcast(&data->dongles[i].cond);
 		pthread_mutex_unlock(&data->dongles[i].mutex);
 		i++;
 	}

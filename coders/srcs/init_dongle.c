@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 13:55:07 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/28 11:05:07 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/29 14:19:23 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,6 @@ static int	ft_init_each_dongle(t_data *data, int i)
 	if (pthread_mutex_init(&data->dongles[i].mutex, NULL) != 0)
 	{
 		fprintf(stderr, "Error init mutex\n");
-		return (-1);
-	}
-	if (pthread_cond_init(&data->dongles[i].cond, NULL) != 0)
-	{
-		fprintf(stderr, "Error init cond dongle\n");
-		pthread_mutex_destroy(&data->dongles[i].mutex);
 		return (-1);
 	}
 	return (0);
