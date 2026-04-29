@@ -6,12 +6,13 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 10:38:32 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/28 15:33:02 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/29 11:56:46 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/prototype.h"
 #include "../include/struct.h"
+#include <stdio.h>
 
 void	ft_wake_up_all(t_data *data)
 {
@@ -29,12 +30,22 @@ void	ft_wake_up_all(t_data *data)
 
 int	ft_check_burnout(t_data *data, int i, long now)
 {
+	long		time;
+	int			stop;
+	long		start;
+
+
 	if (now - data->coders[i].last_compile_start > data->time_to_burnout)
 	{
 		data->stop_simulation = SIM_BURNOUT;
+		stop = data->stop_simulation;
+		start = data->start_time;
 		pthread_mutex_unlock(&data->sim_mutex);
 		ft_wake_up_all(data);
-		ft_print_status(data, data->coders[i].id, "burned out");
+		pthread_mutex_lock(&data->print_mutex);
+		time = ft_get_time() - start;
+		printf("%ld %d burned out\n", time, data->coders[i].id);
+		pthread_mutex_unlock(&data->print_mutex);
 		return (1);
 	}
 	return (0);

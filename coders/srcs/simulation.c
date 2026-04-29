@@ -6,7 +6,7 @@
 /*   By: advacher <advacher@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 10:25:15 by advacher          #+#    #+#             */
-/*   Updated: 2026/04/28 10:49:13 by advacher         ###   ########.fr       */
+/*   Updated: 2026/04/29 10:18:37 by advacher         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,34 +14,33 @@
 #include "../include/struct.h"
 #include <stdio.h>
 
-static void	ft_join_coders(int i, t_data *data)
+static void	ft_join_coders(int size, t_data *data)
 {
-	while (--i >= 0)
+	while (--size >= 0)
 	{
-		if (pthread_join(data->coders[i].thread_id, NULL) != 0)
-		{
+		if (pthread_join(data->coders[size].thread_id, NULL) != 0)
 			fprintf(stderr, "Error: Failed to join thread coders %d\n",
-				i);
-			return ;
-		}
+				size);
 	}
 }
 
 int	ft_finish_simulation(t_data *data)
 {
 	int	i;
+	int	exit_status;
 
 	i = 0;
+	exit_status = 0;
 	while (i < data->number_of_coders)
 	{
 		if (pthread_join(data->coders[i].thread_id, NULL) != 0)
 		{
 			fprintf(stderr, "Error: Failed to join thread coders %d\n", i);
-			return (-1);
+			exit_status = -1;
 		}
 		i++;
 	}
-	return (0);
+	return (exit_status);
 }
 
 static int	ft_create_coders(t_data *data)
