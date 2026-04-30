@@ -11,7 +11,7 @@ FILES       = \
             init_dongle.c \
             clean.c \
             simulation.c \
-            simulation_utils.c \
+            routine_coder.c \
             monitor.c \
             monitor_utils.c \
             dongle.c \

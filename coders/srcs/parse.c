@@ -61,7 +61,7 @@ static int	ft_check_numb_arguments(int ac, char **av)
 	if (ac != 9)
 	{
 		fprintf(stderr,
-			"Error args must be :\n number_of_coders"
+			"Error args must be :\n number_of_coders "
 			"time_to_burnout time_to_compile "
 			"time_to_debug time_to_refactor number_of_compiles_required "
 			"dongle_cooldown scheduler\n");

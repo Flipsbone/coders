@@ -45,3 +45,28 @@ int	ft_can_take_dongle(t_dongle *dongle, t_coder *coder)
 	return (1);
 }
 
+void	ft_add_to_queue(t_dongle *dongle, t_coder *coder)
+{
+	if (dongle->queue_size < 2)
+	{
+		dongle->queue[dongle->queue_size] = coder->id;
+		dongle->queue_size++;
+	}
+}
+
+void	ft_remove_from_queue(t_dongle *dongle, t_coder *coder)
+{
+	if (dongle->queue_size == 0)
+		return ;
+	if (dongle->queue[0] == coder->id)
+	{
+		dongle->queue[0] = dongle->queue[1];
+		dongle->queue[1] = 0;
+		dongle->queue_size--;
+	}
+	else if (dongle->queue_size == 2 && dongle->queue[1] == coder->id)
+	{
+		dongle->queue[1] = 0;
+		dongle->queue_size--;
+	}
+}
