@@ -49,14 +49,14 @@ To validate the robustness of the multithreaded architecture and the scheduling 
 * **Objective:** Verify that a released dongle is not immediately reusable and strictly respects the imposed cooldown period.
 * **Command:** `./codexion 2 500 100 0 0 2 200 fifo`
 * **Observed Result:** Coder 1 takes the dongles at time `0` and finishes compiling at time `100`. Coder 2 only acquires the dongles at timestamp `300`.
-* **Analysis:** The 200ms cooldown period is perfectly respected. Access to the dongles is properly locked during this transitional period.
+* **Analysis:** The 200ms cooldown period is perfectly respected. Access to the dongles is properly locked during this transitional period, proving that the `ft_get_time() < dongle->available_at` condition works as intended.
 * **Why it burns out:** Coder 1 starves because they must wait for the long 200ms cooldown to finish on both turns before they can compile a second time, exceeding their 500ms lifespan.
 
 ### 2. Burnout Detection (Monitor Precision)
 * **Objective:** Ensure the monitor thread accurately detects a timeout (burnout) and cleanly stops the simulation without waiting for other ongoing actions to finish.
 * **Command:** `./codexion 3 150 200 0 0 1 0 fifo`
 * **Observed Result:** A coder begins compiling (duration 200ms). Since the survival time (burnout limit) is set to 150ms, Coder 1 outputs `151 1 burned out`.
-* **Analysis:** The monitor detected the timeout down to the millisecond (151ms). It immediately halted the simulation, cleanly interrupting the running threads.
+* **Analysis:** The monitor detected the timeout down to the millisecond (151ms). It immediately halted the simulation, cleanly interrupting the running threads.(Coder 3 did not finish its 200ms compilation).
 * **Why it burns out:** Survival is mathematically impossible because a single compilation takes longer (200ms) than the total time allowed to live (150ms).
 
 ### 3. Scheduler Comparison (FIFO vs. EDF)
@@ -69,10 +69,10 @@ To validate the robustness of the multithreaded architecture and the scheduling 
 * **Why it burns out:** With 3 coders and 3 dongles, only one coder can eat at a time. The cumulative wait time forces the last coder in the rotation to exceed their 300ms limit.
 
 ### 4. Multithreading Safety (Deadlock Prevention)
-* **Objective:** Prove the absence of deadlocks and memory access conflicts (data races).
-* **Command:** `valgrind --tool=helgrind ./codexion 4 600 100 50 50 2 10 edf`
-* **Observed Result:** The simulation runs to its natural completion with the final report: `ERROR SUMMARY: 0 errors from 0 contexts`.
-* **Analysis:** The Mutex architecture formally prevents any "deadlocks" (notably through the asymmetric acquisition of dongles for even/odd coders). There are no Data Races: the reading and writing of shared variables are perfectly synchronized.
+* **Objective:** Prove the structural prevention of deadlocks (circular waiting) under conditions of extreme resource contention.
+* **Command:** `valgrind --tool=helgrind ./codexion 10 5000 1 1 1 100 0 edf`
+* **Observed Result:** Thousands of mutex locks and unlocks occur per second. The simulation does not freeze and successfully reaches completion for all 1000 required compilations. Additionally, running this under `valgrind --tool=helgrind` confirms with the final report: `ERROR SUMMARY: 0 errors from 0 contexts`.
+* **Analysis:** The absence of artificial delays (`0` cooldown, `1`ms action times) forces the threads into maximum collision. The fact that the simulation successfully completes without hanging proves that the asymmetric lock logic makes deadlocks impossible, regardless of thread execution speed.
 
 ### 5. Rigorous Memory Management
 * **Objective:** Verify that no memory leaks occur, even in the event of a premature simulation stop.
