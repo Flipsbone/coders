@@ -42,7 +42,51 @@ It is crucial to understand the difference between how coders request dongles, a
 * **Multithreading in C:** [CodeVault - Pthreads & Multithreading Courses](https://www.youtube.com/@CodeVault/courses)
 * **AI Usage**: Artificial Intelligence was used to brainstorm deadlock prevention strategies, specifically transitioning from an ID-based hierarchy to the Even/Odd acquisition algorithm, and to review the English phrasing of this README.
 
-## Example Usage
+## Tests and Analysis of the Simulation 
+To validate the robustness of the multithreaded architecture and the scheduling algorithm, several test scenarios were executed. Below is the analysis of the simulation's behavior under these constraints.
+
+### 1. Cooldown Period Enforcement
+* **Objective:** Verify that a released dongle is not immediately reusable and strictly respects the imposed cooldown period.
+* **Command:** `./codexion 2 500 100 0 0 2 200 fifo`
+* **Observed Result:** Coder 1 takes the dongles at time `0` and finishes compiling at time `100`. Coder 2 only acquires the dongles at timestamp `300`.
+* **Analysis:** The 200ms cooldown period is perfectly respected. Access to the dongles is properly locked during this transitional period.
+* **Why it burns out:** Coder 1 starves because they must wait for the long 200ms cooldown to finish on both turns before they can compile a second time, exceeding their 500ms lifespan.
+
+### 2. Burnout Detection (Monitor Precision)
+* **Objective:** Ensure the monitor thread accurately detects a timeout (burnout) and cleanly stops the simulation without waiting for other ongoing actions to finish.
+* **Command:** `./codexion 3 150 200 0 0 1 0 fifo`
+* **Observed Result:** A coder begins compiling (duration 200ms). Since the survival time (burnout limit) is set to 150ms, Coder 1 outputs `151 1 burned out`.
+* **Analysis:** The monitor detected the timeout down to the millisecond (151ms). It immediately halted the simulation, cleanly interrupting the running threads.
+* **Why it burns out:** Survival is mathematically impossible because a single compilation takes longer (200ms) than the total time allowed to live (150ms).
+
+### 3. Scheduler Comparison (FIFO vs. EDF)
+* **Objective:** Demonstrate the impact of the scheduling algorithm on resource allocation order.
+* **Compared Commands:** `./codexion 3 300 100 0 0 3 10 fifo` and `./codexion 3 300 100 0 0 3 10 edf`
+* **Observed Result:** 
+  * In **FIFO** mode, the initial dongle allocation order is: Coder 1, Coder 3, Coder 2.
+  * In **EDF** mode, the initial order dynamically changes to: Coder 3, Coder 1, Coder 2.
+* **Analysis:** Changing the scheduler alters the flow of the simulation even with identical parameters. The EDF (Earliest Deadline First) algorithm overrides the basic arrival order to prioritize coders based on the urgency of their next burnout.
+* **Why it burns out:** With 3 coders and 3 dongles, only one coder can eat at a time. The cumulative wait time forces the last coder in the rotation to exceed their 300ms limit.
+
+### 4. Multithreading Safety (Deadlock Prevention)
+* **Objective:** Prove the absence of deadlocks and memory access conflicts (data races).
+* **Command:** `valgrind --tool=helgrind ./codexion 4 600 100 50 50 2 10 edf`
+* **Observed Result:** The simulation runs to its natural completion with the final report: `ERROR SUMMARY: 0 errors from 0 contexts`.
+* **Analysis:** The Mutex architecture formally prevents any "deadlocks" (notably through the asymmetric acquisition of dongles for even/odd coders). There are no Data Races: the reading and writing of shared variables are perfectly synchronized.
+
+### 5. Rigorous Memory Management
+* **Objective:** Verify that no memory leaks occur, even in the event of a premature simulation stop.
+* **Executed Commands:**
+  1. Natural finish: `valgrind -s --leak-check=full [...] ./codexion 4 600 100 50 50 2 10 edf`
+  2. Premature finish: `valgrind -s --leak-check=full [...] ./codexion 3 50 200 0 0 1 0 fifo`
+* **Observed Result:** In both cases, Valgrind confirms: `All heap blocks were freed -- no leaks are possible`.
+* **Analysis:** The cleanup module is highly robust. Regardless of why the program stops, all dynamically allocated memory structures (`malloc`) are freed, and all Mutexes are cleanly destroyed before the process terminates.
+
+### 6. Full Survival (Simulation Finished)
+* **Objective:** Demonstrate a scenario where resources and timings allow all threads to complete their required tasks without any burnouts.
+* **Command:** `./codexion 4 800 200 50 50 2 10 edf`
+* **Observed Result:** All 4 coders successfully complete their 2 required compilations. The program exits naturally without any `burned out` messages.
+* **Analysis:** With 4 dongles available, two coders can compile simultaneously. Combined with a generous survival time (800ms) and dynamic EDF scheduling, the resource rotation is fast enough for everyone to survive and trigger the intended `SIM_FINISHED` state.
 
 ## Project Architecture
 Below is a visual representation of how the different components of **Codexion** interact:
